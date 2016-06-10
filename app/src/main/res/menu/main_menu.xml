@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+
+    <item
+        android:id ="@+id/refresh"
+        android:orderInCategory="200"
+        android:title="refresh"
+        android:icon ="@drawable/ic_autorenew"
+        app:showAsAction="ifRoom"/>
+
+
+
+    <item
+        android:id="@+id/menu_settings"
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="menu settings"/>
+</menu>
