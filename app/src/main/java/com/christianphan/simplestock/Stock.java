@@ -31,7 +31,11 @@ public class Stock {
 
     public double getpercentage(String newValue)
     {
-        //String
+        double newValuedouble = Double.parseDouble(newValue);
+        double valuedouble = Double.parseDouble(value);
+
+        double percent = 100 - (newValuedouble/valuedouble);
+
 
 
 
