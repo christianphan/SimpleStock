@@ -47,6 +47,7 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         ImageView imageletter = (ImageView) convertView.findViewById(R.id.Icon);
         TextView indexname = (TextView) convertView.findViewById(R.id.stock_index);
         ImageView imagearrow = (ImageView) convertView.findViewById(R.id.DownUp);
+        TextView percentchange = (TextView) convertView.findViewById(R.id.Percent);
 
 
 
@@ -62,6 +63,19 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
 
         Drawable arrow = ContextCompat.getDrawable(stocklistitem.context,android.R.color.transparent);
 
+        if (Double.parseDouble(stocklistitem.percent) < 0)
+        {
+            arrow = ContextCompat.getDrawable(stocklistitem.context,R.drawable.ic_downarrow);
+
+
+
+        }
+        else if(Double.parseDouble(stocklistitem.percent) > 0)
+        {
+            arrow = ContextCompat.getDrawable(stocklistitem.context,R.drawable.ic_uparrow);
+        }
+
+
 
 
 
@@ -70,8 +84,32 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         imageletter.setImageDrawable(drawable);
         indexname.setText("(" + stocklistitem.index + ")");
         imagearrow.setImageDrawable(arrow);
+        percentchange.setText(stocklistitem.percent + "%");
+
+
+        if (Double.parseDouble(stocklistitem.percent) < 0)
+        {
+
+            percentchange.setTextColor(Color.parseColor("#ce3333"));
+
+
+        }
+        else if(Double.parseDouble(stocklistitem.percent) > 0)
+        {
+            percentchange.setTextColor(Color.parseColor("#3C9F26"));
+        }
+
+
 
         return convertView;
+
+    }
+
+
+    public void refresh(Context context)
+    {
+
+
 
     }
 
