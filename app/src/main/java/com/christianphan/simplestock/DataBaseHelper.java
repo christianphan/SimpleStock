@@ -2,6 +2,7 @@ package com.christianphan.simplestock;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -18,6 +19,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COL_3 = "NAME";
     public static final String COL_4 = "PRICE";
     public static final String COL_5 = "PERCENT";
+    public static final String COL_6 = "COLOR";
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -30,7 +32,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
             String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_NAME + "("
                     + COL_1 + " INTEGER PRIMARY KEY AUTOINCREMENT," + COL_2 + " TEXT,"
-                    + COL_3 + " TEXT," + COL_4 + " TEXT," + COL_5 + " TEXT" + ")";
+                    + COL_3 + " TEXT," + COL_4 + " TEXT," + COL_5 + " TEXT," + COL_6 + " TEXT" + ")";
 
             db.execSQL(CREATE_CONTACTS_TABLE);
 
@@ -46,11 +48,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        this.onCreate(db);
+        onCreate(db);
     }
 
 
-    public boolean insertData(String indexName, String name, String price, String percent)
+    public boolean insertData(String indexName, String name, String price, String percent, String color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -59,6 +61,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_3, name);
         contentValues.put(COL_4, price);
         contentValues.put(COL_5, percent);
+        contentValues.put(COL_6, color);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
 
@@ -82,7 +85,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return cnt;
     }
 
-    public boolean updateData(String id, String indexName, String name, String price, String percent)
+    public boolean updateData(String id, String indexName, String name, String price, String percent, String color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -91,8 +94,34 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_3, name);
         contentValues.put(COL_4, price);
         contentValues.put(COL_5, percent);
+        contentValues.put(COL_6, color);
         db.update(TABLE_NAME ,contentValues,"ID = ?",new String[] { id });
         return true;
+
+    }
+
+    public Cursor getAllData()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME, null);
+        return res;
+    }
+
+    public Integer deleteData(String id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_NAME,"ID = ?",new String[] { id });
+
+    }
+
+    public Cursor getLastData()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME;
+        Cursor res = db.rawQuery(selectQuery, null);
+        res.moveToLast();
+        return res;
+
 
     }
 }

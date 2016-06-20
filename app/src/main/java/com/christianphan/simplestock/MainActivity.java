@@ -2,32 +2,26 @@ package com.christianphan.simplestock;
 
 
 import android.app.Dialog;
+import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.json.JSONException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
-import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 import yahoofinance.YahooFinance;
 
@@ -38,15 +32,16 @@ public class MainActivity extends AppCompatActivity {
     DataBaseHelper myDB;
     private String index;
     private ArrayList<Stock> arrayList;
-    //private ArrayAdapter<Stock> adapter;
     private custom_adapter adapter;
     private Stock[] items ={};
     private String StringName = "";
     private String StringValue ="";
     private String StringIndex = "";
     private String StringPercent ="";
-    private String valuearray[];
-    private String percentArray[];
+    private String StringColor = "";
+    private ArrayList<String> valuearray = new ArrayList<String>();
+    private ArrayList<String> percentArray = new ArrayList<String>();
+    private int IntID;
 
 
 
@@ -87,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new custom_adapter(this,arrayList);
         listview.setAdapter(adapter);
         myDB = new DataBaseHelper(this);
+        getList();
 
 
         Button button = (Button) findViewById(R.id.button);
@@ -94,15 +90,22 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(MainActivity.this);
-                dialog.setTitle("Enter Index");
-                dialog.setContentView(R.layout.stockinput);
-                dialog.show();
 
 
-                final EditText editText = (EditText) dialog.findViewById(R.id.editText);
-                Button submit = (Button) dialog.findViewById(R.id.button2);
-                Button cancel = (Button) dialog.findViewById(R.id.button3);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog OptionDialog = builder.create();
+                OptionDialog.setTitle("Enter Index");
+                LayoutInflater inflater = getLayoutInflater();
+                View dialoglayout = inflater.inflate(R.layout.stockinput, null);
+                OptionDialog.setView(dialoglayout);
+                OptionDialog.show();
+
+
+
+
+                final EditText editText = (EditText) dialoglayout.findViewById(R.id.editText);
+                Button submit = (Button) dialoglayout.findViewById(R.id.button2);
+                Button cancel = (Button) dialoglayout.findViewById(R.id.button3);
 
                 submit.setOnClickListener(new View.OnClickListener() {
 
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                        dialog.cancel();
+                        OptionDialog.cancel();
 
                     }
 
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(View v) {
-                        dialog.cancel();
+                        OptionDialog.cancel();
                     }
 
                 });
@@ -135,6 +138,55 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
+        });
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog OptionDialog = builder.create();
+                OptionDialog.setTitle("Delete Index (" + arrayList.get(position).index + ")");
+                LayoutInflater inflater = getLayoutInflater();
+                View dialoglayout = inflater.inflate(R.layout.stockdelete, null);
+                OptionDialog.setView(dialoglayout);
+                OptionDialog.show();
+
+
+                Button submit = (Button) dialoglayout.findViewById(R.id.deleteButton);
+                Button cancel = (Button) dialoglayout.findViewById(R.id.noDeleteButton);
+
+                submit.setOnClickListener(new View.OnClickListener() {
+
+
+                    @Override
+                    public void onClick(View v) {
+
+                        deleteItem(position);
+                        OptionDialog.cancel();
+
+                    }
+
+
+                });
+
+
+
+
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        OptionDialog.cancel();
+                    }
+
+                });
+
+
+
+
+            }
         });
 
     }
@@ -211,21 +263,26 @@ public class MainActivity extends AppCompatActivity {
 
         if(StringName != "error")
         {
-            //arrayList.add(StringName);
-            //adapter.notifyDataSetChanged();
 
-            Stock addedStock = new Stock(StringName, StringValue, StringIndex,getApplicationContext(), StringPercent);
+            Stock addedStock = new Stock(StringName, StringValue, StringIndex,getApplicationContext(), StringPercent, 0, 0);
+            StringColor = Integer.toString(addedStock.color);
+            myDB.insertData(StringIndex,StringName, StringValue, StringPercent, StringColor);
+
+            Cursor res = myDB.getLastData();
+            String StringID = res.getString(0);
+            addedStock.setID(StringID);
+
 
             arrayList.add(addedStock);
             adapter.notifyDataSetChanged();
+            valuearray.add(StringValue);
+            percentArray.add(StringPercent);
 
 
 
-                boolean returnValue = myDB.insertData(StringIndex,StringName, StringValue, StringPercent);
-                if(returnValue = true)
-                {
 
-                }
+
+
 
 
         }
@@ -261,8 +318,8 @@ public class MainActivity extends AppCompatActivity {
 
             try{
 
-                percentArray = new String[arrayList.size()];
-                valuearray = new String[arrayList.size()];
+               // percentArray = new String[arrayList.size()];
+               // valuearray = new String[arrayList.size()];
 
                 for(int i = 0; i < arrayList.size(); i++)
                 {
@@ -282,8 +339,6 @@ public class MainActivity extends AppCompatActivity {
                     StringValue = stock.getQuote().getPrice().toString();
                     StringPercent = stock.getQuote().getChangeInPercent().toString();
 
-                    valuearray[i] = StringValue;
-                    percentArray[i] = StringPercent;
 
                 }
 
@@ -318,13 +373,12 @@ public class MainActivity extends AppCompatActivity {
                 {
 
                     Stock updatedStock = arrayList.get(i);
-                    updatedStock.value = valuearray[i];
-                    updatedStock.percent = percentArray[i];
+                    updatedStock.value = valuearray.get(i);
+                    updatedStock.percent = percentArray.get(i);
 
                     arrayList.set(i, updatedStock);
-                    String id = Integer.toString(i + 1);
-                    //myDB.updateData(id, updatedStock.index, updatedStock.name, updatedStock.value, updatedStock.percent);
-                    myDB.updateData(id, updatedStock.index, updatedStock.name, updatedStock.value, updatedStock.percent);
+                    String id = Integer.toString(updatedStock.primaryid);
+                    myDB.updateData(id, updatedStock.index, updatedStock.name, updatedStock.value, updatedStock.percent, Integer.toString(updatedStock.color));
 
 
                 }
@@ -342,7 +396,52 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean getList() {
+        Cursor res = myDB.getAllData();
 
+
+        if (res.getCount() == 0) {
+            return false;
+        }
+
+
+
+        int position = 0;
+        while (res.moveToNext()) {
+
+            String StringID = res.getString(0);
+            StringIndex = res.getString(1);
+            StringName = res.getString(2);
+            StringValue = res.getString(3);
+            StringPercent = res.getString(4);
+            StringColor = res.getString(5);
+
+
+            Stock stockitem = new Stock(StringName, StringValue, StringIndex, getApplicationContext(), StringPercent,
+                    Integer.parseInt(StringColor),Integer.parseInt(StringID));
+
+            arrayList.add(stockitem);
+
+            valuearray.add(StringValue);
+            percentArray.add(StringPercent);
+            position++;
+
+        }
+
+        return true;
+
+
+    }
+
+    public void deleteItem(int position)
+    {
+        Integer deletedRow = myDB.deleteData(Integer.toString(arrayList.get(position).primaryid));
+        arrayList.remove(position);
+        adapter.notifyDataSetChanged();
+        valuearray.remove(position);
+        percentArray.remove(position);
+
+    }
 
 
 

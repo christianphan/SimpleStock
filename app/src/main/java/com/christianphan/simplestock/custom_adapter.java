@@ -49,14 +49,12 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         ImageView imagearrow = (ImageView) convertView.findViewById(R.id.DownUp);
         TextView percentchange = (TextView) convertView.findViewById(R.id.Percent);
 
+      //  if(stocklistitem.color == 0) {
 
+      //      ColorGenerator generator = ColorGenerator.MATERIAL;
+       //     stocklistitem.color = generator.getRandomColor();
 
-        if(stocklistitem.color == 0) {
-
-            ColorGenerator generator = ColorGenerator.MATERIAL;
-            stocklistitem.color = generator.getRandomColor();
-
-        }
+     //   }
 
         TextDrawable drawable = TextDrawable.builder()
                 .buildRect(stocklistitem.first, stocklistitem.color);
@@ -98,6 +96,8 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         {
             percentchange.setTextColor(Color.parseColor("#3C9F26"));
         }
+
+
 
 
 
