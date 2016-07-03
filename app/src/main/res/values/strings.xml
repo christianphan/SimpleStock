@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SimpleStock</string>
+    <string name="aboutinfo">This app is designed to show stock information in a simple and lightweight way. Other stock apps often bloat up information making the
+         app slow and cluttered.</string>
+    <string name="aboutinfo2">The goal of this app is to show price value of indexes, allow users to be notified of any major
+    changes within a stock, and manage different portfolios.</string>
 </resources>

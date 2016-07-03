@@ -20,9 +20,26 @@ public class Stock {
     public Context context;
     public String percent;
     public int primaryid;
+    public String change;
+    public String annual;
+    public String high;
+    public String volume;
+    public String open;
+    public String low;
+    public String time;
+    public String Stringdate = "";
+    public String Stringdate2 = "";
+    public String Stringdate3 = "";
+    public String Stringdate4 = "";
+    public String Stringprice1 = "";
+    public String Stringprice2 = "";
+    public String Stringprice3 = "";
+    public String Stringprice4 = "";
 
 
-    public Stock(String name_input, String value_input, String index_input, Context context_input, String percent_input, int color_input, int id_input)
+    public Stock(String name_input, String value_input, String index_input, Context context_input,
+                 String percent_input, int color_input, int id_input, String change_input, String annual_input, String high_input,
+                 String volume_input, String open_input, String low_input, String time_input)
     {
         this.name = name_input;
         this.value = value_input;
@@ -31,6 +48,16 @@ public class Stock {
         this.percent = percent_input;
         this.color = color_input;
         this.primaryid = id_input;
+        this.change = change_input;
+        this.annual = annual_input;
+        this.high = high_input;
+        this.volume = volume_input;
+        this.open = open_input;
+        this.low = low_input;
+        this.time = time_input;
+
+
+
 
         if(color == 0) {
 

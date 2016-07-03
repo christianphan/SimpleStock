@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+
+
+    <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="Addition Information"
+            android:textColor="#303032"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_gravity="center"
+            android:textColor="#303032"
+            android:id="@+id/dateinfo"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#1a1010"
+                    android:layout_gravity="center"
+                    android:text="$14.56"
+                    android:id="@+id/openadditional"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/openTitle"
+                    android:text="Open"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#1a1010"
+                    android:layout_gravity="center"
+                    android:text="13.56"
+                    android:id="@+id/valueadditional"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/currentTitle"
+                    android:text="Current Value"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#1a1010"
+                    android:layout_gravity="center"
+                    android:id="@+id/highadditional"
+                    android:text="$14.56"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/highTitle"
+                    android:text="Today's High"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#1a1010"
+                    android:layout_gravity="center"
+                    android:id="@+id/lowadditional"
+                    android:text="$13.45"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/lowTitle"
+                    android:text="Today's Low"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#73C82C"
+                    android:layout_gravity="center"
+                    android:id="@+id/percentadditional"
+                    android:text="4.56%"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/percentTitle"
+                    android:text="Percent Change"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#73C82C"
+                    android:layout_gravity="center"
+                    android:id="@+id/changeadditional"
+                    android:text="+$4.21"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/totalGainTitle"
+                    android:text="Today's Gain"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#1a1010"
+                    android:layout_gravity="center"
+                    android:id="@+id/volumeadditional"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/volumeTitle"
+                    android:text="Volume"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:textSize="25dp"
+                    android:textColor="#1a1010"
+                    android:layout_gravity="center"
+                    android:text="$15.61"
+                    android:id="@+id/annualadditional"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_weight="5"
+                    android:textSize="15dp"
+                    android:id="@+id/annualTitle"
+                    android:text="Annual Highest"
+                    android:layout_gravity="center"
+                    android:textColor="#303032"/>
+
+
+
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:minHeight="140dp"/>
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+
+</ScrollView>

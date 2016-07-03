@@ -1,10 +1,14 @@
 apply plugin: 'com.android.application'
 
 repositories{
+
     maven {
         url 'http://dl.bintray.com/amulyakhare/maven'
     }
+
+    maven { url "https://jitpack.io"}
 }
+
 
 
 android {
@@ -13,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId "com.christianphan.simplestock"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -33,6 +37,9 @@ dependencies {
     compile 'com.yahoofinance-api:YahooFinanceAPI:3.2.0'
     compile files('libs/jsoup-1.9.2.jar')
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile 'com.android.support:support-v4:22.0.+'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.0'
 
 }
 

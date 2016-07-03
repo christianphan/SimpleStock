@@ -27,8 +27,6 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
 
         super(context,R.layout.stock_items,stocks);
 
-
-
     }
 
     @Override
@@ -48,6 +46,7 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         TextView indexname = (TextView) convertView.findViewById(R.id.stock_index);
         ImageView imagearrow = (ImageView) convertView.findViewById(R.id.DownUp);
         TextView percentchange = (TextView) convertView.findViewById(R.id.Percent);
+        TextView valuechange = (TextView) convertView.findViewById(R.id.stock_change);
 
       //  if(stocklistitem.color == 0) {
 
@@ -78,23 +77,28 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
 
 
         textname.setText(stocklistitem.name);
-        valuename.setText(stocklistitem.value);
+        valuename.setText(stocklistitem.value + " ");
         imageletter.setImageDrawable(drawable);
         indexname.setText("(" + stocklistitem.index + ")");
         imagearrow.setImageDrawable(arrow);
         percentchange.setText(stocklistitem.percent + "%");
 
 
+
         if (Double.parseDouble(stocklistitem.percent) < 0)
         {
 
             percentchange.setTextColor(Color.parseColor("#ce3333"));
+            valuechange.setText(stocklistitem.change + " ");
+            valuechange.setTextColor(Color.parseColor("#ce3333"));
 
 
         }
         else if(Double.parseDouble(stocklistitem.percent) > 0)
         {
             percentchange.setTextColor(Color.parseColor("#3C9F26"));
+            valuechange.setText("+" + stocklistitem.change + " ");
+            valuechange.setTextColor(Color.parseColor("#3C9F26"));
         }
 
 

@@ -5,12 +5,23 @@
     tools:context=".MainActivity">
 
 
+
+
+
     <item
         android:id ="@+id/refresh"
-        android:orderInCategory="200"
+        android:orderInCategory="1"
         android:title="refresh"
-        android:icon ="@drawable/ic_autorenew"
+        android:icon ="@drawable/ic_action_turnright"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id ="@+id/add"
+        android:orderInCategory="2"
+        android:title="refresh"
+        android:icon ="@drawable/ic_action_add"
+        app:showAsAction="ifRoom"/>
+
 
 
 
@@ -19,5 +30,27 @@
         app:showAsAction="never"
         android:orderInCategory="100"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:title="menu settings"/>
+        android:title="About"/>
+
+
+
+
+
+    <item
+        android:id="@+id/version"
+        app:showAsAction="never"
+        android:title="Version"
+        />
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_height="128dp"
+        android:layout_width="match_parent"
+        android:minHeight="?android:attr/actionBarSize"
+        android:gravity="bottom" />
+
+
+
+
 </menu>
