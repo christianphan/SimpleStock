@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.View;
+import android.view.ViewGroup;
 
 
 public class TabAdapter extends FragmentPagerAdapter {
@@ -47,6 +48,7 @@ public class TabAdapter extends FragmentPagerAdapter {
     public View getTabView() {
         return getTabView();
     }
+
 
 
 

@@ -206,8 +206,70 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
+                Intent i = new Intent(MainActivity.this, AdditonalInfo.class);
+
                 stockposition = position;
-                new NewActivity().execute();
+
+                String testValue = arrayList.get(stockposition).value;
+                String testPercent = arrayList.get(stockposition).percent;
+                String testName = arrayList.get(stockposition).name;
+                String testColor = Integer.toString(arrayList.get(stockposition).color);
+                String testIndex = arrayList.get(stockposition).index;
+                String testVolume = arrayList.get(stockposition).volume;
+                String testOpen = arrayList.get(stockposition).open;
+                String testHigh = arrayList.get(stockposition).high;
+                String testLow = arrayList.get(stockposition).low;
+                String testChange = arrayList.get(stockposition).change;
+                String testAnnual = arrayList.get(stockposition).annual;
+                String testTime = arrayList.get(stockposition).time;
+                String testdate1 = dates[0];
+                String testdate2 = dates[1];
+                String testdate3 = dates[2];
+                String testdate4 = dates[3];
+                String testprice1 = values[0];
+                String testprice2 = values[1];
+                String testprice3 = values[2];
+                String testprice4 = values[3];
+                String testprice5 = arrayList.get(stockposition).value;
+                int intchange = datalist.IsPositive(stockposition);
+
+                try {
+
+                    intchange = Integer.parseInt(datalist.getChangeFromArray(stockposition).trim());
+                } catch (NumberFormatException nfe) {
+
+                }
+
+
+                Bundle b = new Bundle();
+
+
+                b.putString("Value", testValue);
+                b.putString("Percent", testPercent);
+                b.putString("Name", testName);
+                b.putString("Color", testColor);
+                b.putString("Index", testIndex);
+                b.putString("Volume", testVolume);
+                b.putString("Open", testOpen);
+                b.putString("High", testHigh);
+                b.putString("Low", testLow);
+                b.putString("Change", testChange);
+                b.putString("Annual", testAnnual);
+                b.putString("Time", testTime);
+                b.putInt("Test", intchange);
+                b.putString("Date1", testdate1);
+                b.putString("Date2", testdate2);
+                b.putString("Date3", testdate3);
+                b.putString("Date4", testdate4);
+                b.putString("Price1", testprice1);
+                b.putString("Price2", testprice2);
+                b.putString("Price3", testprice3);
+                b.putString("Price4", testprice4);
+                b.putString("Price5", testprice5);
+                i.putExtras(b);
+
+
+                startActivityForResult(i, 1);
 
 
             }
@@ -269,18 +331,18 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                @Override
-                public void onRefresh()
-                {
-                    refresh();
+            @Override
+            public void onRefresh()
+            {
+                refresh();
 
-                }
+            }
 
 
 
 
         });
-;
+        ;
 
     }
 
@@ -474,9 +536,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            }
-
         }
+
+    }
 
 
 
@@ -505,12 +567,12 @@ public class MainActivity extends AppCompatActivity {
 
 
             String StringID = res.getString(0);
-           // String StringIndex =res.getString(1);
-        //    StringName = res.getString(2);
-        //    StringValue = res.getString(3);
-        //    StringPercent = res.getString(4);
-         String   StringColor = res.getString(5);
-        //    StringChange = res.getString(6);
+            // String StringIndex =res.getString(1);
+            //    StringName = res.getString(2);
+            //    StringValue = res.getString(3);
+            //    StringPercent = res.getString(4);
+            String   StringColor = res.getString(5);
+            //    StringChange = res.getString(6);
 
 
             Stock stockitem = new Stock(datalist.getStringName(), datalist.getStringValue(),
@@ -545,178 +607,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public class NewActivity extends AsyncTask<Void, Void, Void> {
-
-
-        private String todayClose;
-        private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
-
-        protected void onPreExecute() {
-
-            this.dialog.setMessage("Loading...");
-            this.dialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... args) {
-
-            try {
-
-                yahoofinance.Stock stock = YahooFinance.get(arrayList.get(stockposition).index);
-
-                datalist.updateArrayList(stockposition,stock.getQuote().getPrice().toString(),
-                        stock.getQuote().getChangeInPercent().toString(),stock.getQuote().getChange().toString(),
-                        stock.getQuote().getOpen().toString(), stock.getQuote().getDayHigh().toString(),
-                        stock.getQuote().getDayLow().toString(), stock.getQuote().getVolume().toString(), stock.getQuote().getYearHigh().toString(),
-                        stock.getQuote().getLastTradeDateStr());
-
-
-
-                todayClose = stock.getHistory(Interval.DAILY).get(0).getClose().toString();
-
-                values[3] = stock.getHistory(Interval.DAILY).get(1).getClose().toString();
-                dates[3] = "";
-
-                values[2] = stock.getHistory(Interval.DAILY).get(2).getClose().toString();
-                dates[2] = "";
-
-
-                values[1] = stock.getHistory(Interval.DAILY).get(3).getClose().toString();
-                dates[1] = "";
-
-
-                values[0] = stock.getHistory(Interval.DAILY).get(4).getClose().toString();
-                dates[0] = "";
-
-            } catch (MalformedURLException ex) {
-                datalist.setStringName("Connection Error");
-                return null;
-            } catch (IOException ex) {
-                datalist.setStringName("Connection Error");
-                ;
-                return null;
-            } catch (Exception e) {
-                datalist.setStringName("Connection Error");
-                return null;
-            }
-
-
-            return null;
-        }
-
-
-
-
-        @Override
-        protected void onPostExecute(Void avoid) {
-
-
-            if(datalist.getStringName() != "Connection Error") {
-
-                super.onPostExecute(avoid);
-
-                Intent i = new Intent(MainActivity.this, AdditonalInfo.class);
-
-
-
-                Stock updatedStock = arrayList.get(stockposition);
-                updatedStock.value = datalist.getValueFromArray(stockposition);
-                updatedStock.percent = datalist.getPercentFromArray(stockposition);
-                updatedStock.change = datalist.getChangeFromArray(stockposition);
-                updatedStock.open = datalist.getOpenFromArray(stockposition);
-                updatedStock.high = datalist.getHighFromArray(stockposition);
-                updatedStock.low = datalist.getLowFromArray(stockposition);
-                updatedStock.volume = datalist.getVolumeFromArray(stockposition);
-                updatedStock.annual = datalist.getAnnualFromArray(stockposition);
-                updatedStock.time = datalist.getTimeFromArray(stockposition);
-
-                arrayList.set(stockposition, updatedStock);
-
-                String testValue = arrayList.get(stockposition).value;
-                String testPercent = arrayList.get(stockposition).percent;
-                String testName = arrayList.get(stockposition).name;
-                String testColor = Integer.toString(arrayList.get(stockposition).color);
-                String testIndex = arrayList.get(stockposition).index;
-                String testVolume = arrayList.get(stockposition).volume;
-                String testOpen = arrayList.get(stockposition).open;
-                String testHigh = arrayList.get(stockposition).high;
-                String testLow = arrayList.get(stockposition).low;
-                String testChange = arrayList.get(stockposition).change;
-                String testAnnual = arrayList.get(stockposition).annual;
-                String testTime = arrayList.get(stockposition).time;
-                String testdate1 = dates[0];
-                String testdate2 = dates[1];
-                String testdate3 = dates[2];
-                String testdate4 = dates[3];
-                String testprice1 = values[0];
-                String testprice2 = values[1];
-                String testprice3 = values[2];
-                String testprice4 = values[3];
-                String testprice5 = todayClose;
-                int intchange = datalist.IsPositive(stockposition);
-
-                try {
-
-                    intchange = Integer.parseInt(datalist.getChangeFromArray(stockposition).trim());
-                } catch (NumberFormatException nfe) {
-
-                }
-
-
-                Bundle b = new Bundle();
-
-
-                b.putString("Value", testValue);
-                b.putString("Percent", testPercent);
-                b.putString("Name", testName);
-                b.putString("Color", testColor);
-                b.putString("Index", testIndex);
-                b.putString("Volume", testVolume);
-                b.putString("Open", testOpen);
-                b.putString("High", testHigh);
-                b.putString("Low", testLow);
-                b.putString("Change", testChange);
-                b.putString("Annual", testAnnual);
-                b.putString("Time", testTime);
-                b.putInt("Test", intchange);
-                b.putString("Date1", testdate1);
-                b.putString("Date2", testdate2);
-                b.putString("Date3", testdate3);
-                b.putString("Date4", testdate4);
-                b.putString("Price1", testprice1);
-                b.putString("Price2", testprice2);
-                b.putString("Price3", testprice3);
-                b.putString("Price4", testprice4);
-                b.putString("Price5", testprice5);
-                i.putExtras(b);
-
-
-                adapter.notifyDataSetChanged();
-                String id = Integer.toString(updatedStock.primaryid);
-                myDB.updateData(id, updatedStock.index, updatedStock.name, updatedStock.value,
-                        updatedStock.percent, Integer.toString(updatedStock.color), updatedStock.change, updatedStock.open,
-                        updatedStock.high, updatedStock.low, updatedStock.volume, updatedStock.annual, updatedStock.time);
-
-
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
-
-
-                startActivityForResult(i, 1);
-
-
-            }
-
-
-
-        }
-
-        }
-
-
-
 
 }
-
-

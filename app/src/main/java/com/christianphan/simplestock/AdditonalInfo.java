@@ -1,6 +1,7 @@
 package com.christianphan.simplestock;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -113,7 +114,6 @@ public class AdditonalInfo extends AppCompatActivity {
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
-
 
 
     }
@@ -235,4 +235,14 @@ public class AdditonalInfo extends AppCompatActivity {
     {
         return getApplicationContext();
     }
+
+
+
+
+
 }
+
+
+
+
+

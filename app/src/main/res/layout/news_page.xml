@@ -3,14 +3,39 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <ListView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView2"
-        android:layout_gravity="center_horizontal"
-        android:divider="#3b3b3b"
-        android:dividerHeight="1dp"
-        android:stackFromBottom="false"
-        android:layout_alignParentEnd="false" />
+        android:layout_height="match_parent">
+
+
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/progress_view2"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cpv_animAutostart="true"
+            app:cpv_indeterminate="true"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150dp" />
+
+
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listView2"
+            android:layout_gravity="center_horizontal"
+            android:divider="#3b3b3b"
+            android:dividerHeight="1dp"
+            android:stackFromBottom="false"
+            android:layout_alignParentEnd="false" />
+
+
+    </RelativeLayout>
+
+
+
 </LinearLayout>

@@ -5,6 +5,25 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progress_view"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp" />
+
+
 
 
     <LinearLayout
@@ -19,6 +38,7 @@
             android:textSize="20dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
+            android:id="@+id/titleInfo"
             android:text="Addition Information"
             android:textColor="#303032"/>
 
@@ -52,7 +72,6 @@
                     android:textSize="25dp"
                     android:textColor="#1a1010"
                     android:layout_gravity="center"
-                    android:text="$14.56"
                     android:id="@+id/openadditional"/>
 
 
@@ -85,7 +104,6 @@
                     android:textSize="25dp"
                     android:textColor="#1a1010"
                     android:layout_gravity="center"
-                    android:text="13.56"
                     android:id="@+id/valueadditional"/>
 
 
@@ -129,8 +147,7 @@
                     android:textSize="25dp"
                     android:textColor="#1a1010"
                     android:layout_gravity="center"
-                    android:id="@+id/highadditional"
-                    android:text="$14.56"/>
+                    android:id="@+id/highadditional" />
 
 
                 <TextView
@@ -162,8 +179,7 @@
                     android:textSize="25dp"
                     android:textColor="#1a1010"
                     android:layout_gravity="center"
-                    android:id="@+id/lowadditional"
-                    android:text="$13.45"/>
+                    android:id="@+id/lowadditional"/>
 
 
                 <TextView
@@ -207,8 +223,7 @@
                     android:textSize="25dp"
                     android:textColor="#73C82C"
                     android:layout_gravity="center"
-                    android:id="@+id/percentadditional"
-                    android:text="4.56%"/>
+                    android:id="@+id/percentadditional" />
 
 
                 <TextView
@@ -240,8 +255,7 @@
                     android:textSize="25dp"
                     android:textColor="#73C82C"
                     android:layout_gravity="center"
-                    android:id="@+id/changeadditional"
-                    android:text="+$4.21"/>
+                    android:id="@+id/changeadditional" />
 
 
                 <TextView
@@ -317,7 +331,6 @@
                     android:textSize="25dp"
                     android:textColor="#1a1010"
                     android:layout_gravity="center"
-                    android:text="$15.61"
                     android:id="@+id/annualadditional"/>
 
 
@@ -360,9 +373,7 @@
 
 
 
-
-
-
+</RelativeLayout>
 
 
 </ScrollView>

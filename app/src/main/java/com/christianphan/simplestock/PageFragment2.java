@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -68,6 +70,11 @@ public class PageFragment2 extends Fragment {
 
 
         View view = inflater.inflate(R.layout.news_page, container, false);
+
+
+        CircularProgressView progressView = (CircularProgressView) view.findViewById(R.id.progress_view2);
+        progressView.startAnimation();
+
         final ListView listview = (ListView) view.findViewById(R.id.listView2);
         arrayList = new ArrayList<News>(Arrays.asList(items));
         adapter = new new_adapter(((AdditonalInfo) getActivity()).getContext(), arrayList);
@@ -87,7 +94,7 @@ public class PageFragment2 extends Fragment {
         });
 
 
-        new ReadRss(activity.getContext()).execute();
+       new ReadRss(activity.getContext()).execute();
 
 
 
@@ -97,18 +104,13 @@ public class PageFragment2 extends Fragment {
 
     public class ReadRss extends AsyncTask<Void,Void,Void> {
         Context context;
-        ProgressDialog progressDialog;
-        URL search;
         String result = "";
-        String teststring = "";
         ArrayList<String> titles = new ArrayList<String>();
         ArrayList<String> links = new ArrayList<String>();
         ArrayList<String> dates = new ArrayList<String>();
 
         public ReadRss(Context context) {
             this.context = context;
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("Loading...");
         }
 
 
@@ -165,7 +167,7 @@ public class PageFragment2 extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            if(result != "error")
+            if(result != "error" && !isCancelled())
             {
 
 
@@ -175,6 +177,9 @@ public class PageFragment2 extends Fragment {
                     arrayList.add(addedNews);
                 }
 
+
+                CircularProgressView progressView = (CircularProgressView) getView().findViewById(R.id.progress_view2);
+                progressView.setVisibility(getView().GONE);
                 adapter.notifyDataSetChanged();
 
 
@@ -184,5 +189,12 @@ public class PageFragment2 extends Fragment {
 
         }
 
+
+
     }
+
+
+
+
+
 }
