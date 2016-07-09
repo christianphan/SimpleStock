@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class TabAdapter extends FragmentPagerAdapter {
+public class TabAdapter extends SmartFragmentStatePageAdapter {
+
+    private SmartFragmentStatePageAdapter adapterViewPager;
     final int PAGE_COUNT = 2;
     private String tabTitles[] = new String[] { "Info", "News", };
     private static Context context;
@@ -29,7 +31,7 @@ public class TabAdapter extends FragmentPagerAdapter {
 
         switch(position) {
             case 0:
-                return  PageFragment.newInstance(position + 1);
+                return PageFragment.newInstance(position + 1);
             case 1:
                 return PageFragment2.newInstance(position + 1);
             default:

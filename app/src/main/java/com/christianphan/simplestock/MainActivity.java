@@ -2,42 +2,58 @@ package com.christianphan.simplestock;
 
 
 
-import android.app.ProgressDialog;
+
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.os.AsyncTask;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+
+
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
-
+import au.com.bytecode.opencsv.CSVReader;
 import yahoofinance.YahooFinance;
-import yahoofinance.histquotes.Interval;
 
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
 
     DataBaseHelper myDB;
+    CSVDatabase mySEARCH;
     private String index;
     private ArrayList<Stock> arrayList;
     private custom_adapter adapter;
@@ -48,13 +64,70 @@ public class MainActivity extends AppCompatActivity {
     int stockposition = 0;
     String values[] = new String[4];
     String dates[] = new String[4];
+    SearchView mSearchView;
+
+    String[] item = null;
+    SimpleCursorAdapter simpleAdapter;
+    ListView suggestionslist;
+    Context thisContext;
+    MenuItem searchItem;
+
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String uri = intent.getDataString();
+            index = uri;
+             new YahooAPI().execute();
+             mSearchView.setQuery("", false);
+             mSearchView.clearFocus();
+             searchItem.collapseActionView();
+        }
+    }
+
+
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        index = query.toUpperCase();
+        new YahooAPI().execute();
+        mSearchView.setQuery("", false);
+        mSearchView.clearFocus();
+        searchItem.collapseActionView();
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        return false;
+    }
+
+
 
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+
+        searchItem = menu.findItem(R.id.menu_search);
+        mSearchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setSearchableInfo(manager.getSearchableInfo(
+                new ComponentName(this, MainActivity.class)));
+
+
+
         return true;
+
 
     }
 
@@ -71,47 +144,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.version:
                 versionnumber();
                 return true;
-            case R.id.add:
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                final AlertDialog OptionDialog = builder.create();
-                OptionDialog.setTitle("Enter Index");
-                LayoutInflater inflater = getLayoutInflater();
-                View dialoglayout = inflater.inflate(R.layout.stockinput, null);
-                OptionDialog.setView(dialoglayout);
-                OptionDialog.show();
-
-
-                final EditText editText = (EditText) dialoglayout.findViewById(R.id.editText);
-                Button submit = (Button) dialoglayout.findViewById(R.id.button2);
-                Button cancel = (Button) dialoglayout.findViewById(R.id.button3);
-
-                submit.setOnClickListener(new View.OnClickListener() {
-
-
-                    @Override
-                    public void onClick(View v) {
-
-                        index = editText.getText().toString().toUpperCase();
-                        new YahooAPI().execute();
-
-
-                        OptionDialog.cancel();
-
-                    }
-
-
-                });
-
-
-                cancel.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        OptionDialog.cancel();
-                    }
-
-                });
-
+            case R.id.menu_search:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -120,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
     public void aboutdialog()
     {
@@ -191,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         final ListView listview = (ListView) findViewById(R.id.listView);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         mSwipeRefreshLayout. setColorSchemeResources(R.color.colorPrimary);
@@ -198,9 +235,10 @@ public class MainActivity extends AppCompatActivity {
         adapter = new custom_adapter(this, arrayList);
         listview.setAdapter(adapter);
         myDB = new DataBaseHelper(this);
+        mySEARCH = new CSVDatabase(this);
         getList();
-
-
+        loadSearch();
+        thisContext =  getApplicationContext();
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -605,6 +643,54 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(), "("  + indexname + ")" + " Deleted", Toast.LENGTH_LONG);
         toast.show();
     }
+
+
+
+    public boolean loadSearch()
+    {
+        Cursor res = mySEARCH.getAllData();
+
+        if (res.getCount() == 0) {
+
+            String[] row = null;
+            int total = 8;
+            try {
+                CSVReader reader = new CSVReader(new InputStreamReader(getAssets().open("companylist.csv")));
+                while((row = reader.readNext()) != null)
+                {
+                    mySEARCH.insertData(row[0], row[1]);
+                }
+                reader.close();
+                CSVReader reader2 = new CSVReader(new InputStreamReader(getAssets().open("companylist2.csv")));
+                while((row = reader2.readNext()) != null)
+                {
+                    mySEARCH.insertData(row[0], row[1]);
+                }
+                reader2.close();
+
+
+
+            } catch (IOException e) {
+
+            }
+
+
+            res.close();
+
+
+            return true;
+        }
+        else
+        {
+            res.close();
+            return false;
+        }
+
+
+
+
+    }
+
 
 
 

@@ -10,17 +10,19 @@
 
     <item
         android:id ="@+id/refresh"
-        android:orderInCategory="1"
-        android:title="refresh"
+        android:orderInCategory="2"
+        android:title="Refresh"
         android:icon ="@drawable/ic_action_turnright"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id ="@+id/add"
-        android:orderInCategory="2"
-        android:title="refresh"
+        android:id ="@+id/menu_search"
+        android:orderInCategory="1"
+        android:title="@string/app_label"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:searchSuggestAuthority="com.christianhan.simplestock.ContentProviderSuggestions"
         android:icon ="@drawable/ic_action_add"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
 
 
 
@@ -28,7 +30,7 @@
     <item
         android:id="@+id/menu_settings"
         app:showAsAction="never"
-        android:orderInCategory="100"
+        android:orderInCategory="4"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="About"/>
 
@@ -40,6 +42,7 @@
         android:id="@+id/version"
         app:showAsAction="never"
         android:title="Version"
+        android:orderInCategory="3"
         />
 
 

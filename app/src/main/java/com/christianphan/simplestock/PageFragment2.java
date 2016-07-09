@@ -1,6 +1,7 @@
 package com.christianphan.simplestock;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -43,9 +44,6 @@ public class PageFragment2 extends Fragment {
     private int mPage;
     private String index;
     private ArrayList<String> myStringArray1 = new ArrayList<String>();
-    private ArrayList<News> arrayList;
-    private new_adapter adapter;
-    private News[] items = {};
 
 
     public static PageFragment2 newInstance(int page) {
@@ -65,7 +63,7 @@ public class PageFragment2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        AdditonalInfo activity = (AdditonalInfo) getActivity();
+        final AdditonalInfo activity = (AdditonalInfo) getActivity();
         index = activity.getIndex();
 
 
@@ -76,9 +74,6 @@ public class PageFragment2 extends Fragment {
         progressView.startAnimation();
 
         final ListView listview = (ListView) view.findViewById(R.id.listView2);
-        arrayList = new ArrayList<News>(Arrays.asList(items));
-        adapter = new new_adapter(((AdditonalInfo) getActivity()).getContext(), arrayList);
-        listview.setAdapter(adapter);
 
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,7 +81,7 @@ public class PageFragment2 extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
                 Intent intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(arrayList.get(position).getLink()));
+                        Uri.parse(activity.getArrayList().get(position).getLink()));
                 startActivity(intent);
 
             }
@@ -94,104 +89,10 @@ public class PageFragment2 extends Fragment {
         });
 
 
-       new ReadRss(activity.getContext()).execute();
-
-
-
         return view;
     }
 
 
-    public class ReadRss extends AsyncTask<Void,Void,Void> {
-        Context context;
-        String result = "";
-        ArrayList<String> titles = new ArrayList<String>();
-        ArrayList<String> links = new ArrayList<String>();
-        ArrayList<String> dates = new ArrayList<String>();
-
-        public ReadRss(Context context) {
-            this.context = context;
-        }
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            String url = "http://finance.yahoo.com/rss/headline?s=";
-
-            try{
-                Document doc = Jsoup.connect(url +  index).get();
-                Elements elements = doc.select("item > title");
-                Elements elements2 = doc.select("item > link");
-                Elements elements3 = doc.select("item > pubDate");
-
-                for(Element element : elements)
-                {
-                    titles.add(element.ownText());
-                }
-
-                for(Element element : elements2)
-                {
-                    links.add(element.ownText());
-                }
-
-                for(Element element : elements3)
-                {
-                    dates.add(element.ownText());
-                }
-
-                result = "success";
-
-
-
-            }
-            catch (MalformedURLException ex) {
-                result = "error";
-                return null;
-            } catch (IOException ex) {
-                result = "error";
-                return null;
-            } catch (Exception e) {
-                result = "error";
-                return null;
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            if(result != "error" && !isCancelled())
-            {
-
-
-                for (int i = 0; i < titles.size() ; i++)
-                {
-                    News addedNews = new News(titles.get(i), links.get(i), dates.get(i));
-                    arrayList.add(addedNews);
-                }
-
-
-                CircularProgressView progressView = (CircularProgressView) getView().findViewById(R.id.progress_view2);
-                progressView.setVisibility(getView().GONE);
-                adapter.notifyDataSetChanged();
-
-
-            }
-
-
-
-        }
-
-
-
-    }
 
 
 

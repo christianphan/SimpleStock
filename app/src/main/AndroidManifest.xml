@@ -14,12 +14,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"
+            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+
+            <meta-data android:name="android.app.default.searchable"
+                android:value=".MainActivity" />
         </activity>
         <activity android:name=".AdditonalInfo"
 
@@ -28,6 +38,15 @@
             </activity>
 
         <service android:name=".RssService" />
+
+
+        <provider
+            android:authorities="com.christianphan.simplestock.ContentProviderSuggestions"
+            android:exported="true"
+            android:enabled="true"
+            android:name="com.christianphan.simplestock.ContentProviderSuggestions"/>
     </application>
+
+
 
 </manifest>

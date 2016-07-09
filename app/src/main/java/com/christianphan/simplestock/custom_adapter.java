@@ -88,17 +88,17 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         if (Double.parseDouble(stocklistitem.percent) < 0)
         {
 
-            percentchange.setTextColor(Color.parseColor("#ce3333"));
+            percentchange.setTextColor(Color.parseColor("#e53935"));
             valuechange.setText(stocklistitem.change + " ");
-            valuechange.setTextColor(Color.parseColor("#ce3333"));
+            valuechange.setTextColor(Color.parseColor("#e53935"));
 
 
         }
         else if(Double.parseDouble(stocklistitem.percent) > 0)
         {
-            percentchange.setTextColor(Color.parseColor("#3C9F26"));
+            percentchange.setTextColor(Color.parseColor("#43A047"));
             valuechange.setText("+" + stocklistitem.change + " ");
-            valuechange.setTextColor(Color.parseColor("#3C9F26"));
+            valuechange.setTextColor(Color.parseColor("#43A047"));
         }
 
 

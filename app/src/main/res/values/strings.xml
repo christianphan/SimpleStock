@@ -4,4 +4,9 @@
          app slow and cluttered.</string>
     <string name="aboutinfo2">The goal of this app is to show price value of indexes, allow users to be notified of any major
     changes within a stock, and manage different portfolios.</string>
-</resources>
+
+    <string name="search_hint">Enter Symbol</string>
+    <string name="app_label">Label</string>
+
+
+    </resources>
