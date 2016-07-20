@@ -27,6 +27,8 @@ public class data {
     private String Stringprice2 = "";
     private String Stringprice3 = "";
     private String Stringprice4 = "";
+    private String amountofShares = "";
+    private String valueofShares = "";
     private ArrayList<String> valuearray = new ArrayList<String>();
     private ArrayList<String> percentArray = new ArrayList<String>();
     private ArrayList<String> changeArray = new ArrayList<String>();
@@ -36,10 +38,11 @@ public class data {
     private ArrayList<String> volumeArray = new ArrayList<String>();
     private ArrayList<String> annualArray = new ArrayList<String>();
     private ArrayList<String> timeArray = new ArrayList<String>();
-
+    private ArrayList<String> amountOfSharesArray = new ArrayList<>();
+    private ArrayList<String> valueofSharesArray = new ArrayList<String>();
 
     public void setVaribles(String name, String value, String index, String percent,String change, String open, String high,
-                            String low, String volume, String annual, String time)
+                            String low, String volume, String annual, String time, String amount, String valueofShare)
     {
 
         this.StringName = name;
@@ -53,6 +56,8 @@ public class data {
         this.StringVolume = volume;
         this.StringAnnual = annual;
         this.StringTime = time;
+        this.amountofShares = amount;
+        this.valueofShares = valueofShare;
 
     }
 
@@ -115,6 +120,13 @@ public class data {
     public String getStringColor() {return StringColor;}
 
 
+    public String getAmountofShares() {
+        return amountofShares;
+    }
+
+    public String getValueofShares() {
+        return valueofShares;
+    }
 
     public void setStringColor(String stringColor) {
         StringColor = stringColor;
@@ -131,6 +143,8 @@ public class data {
         volumeArray.add(StringVolume);
         annualArray.add(StringAnnual);
         timeArray.add(StringTime);
+        valueofSharesArray.add(valueofShares);
+        amountOfSharesArray.add(amountofShares);
 
 
     }
@@ -148,8 +162,6 @@ public class data {
         volumeArray.set(position, volume);
         annualArray.set(position, annual);
         timeArray.set(position, time);
-
-
 
     }
 
@@ -211,6 +223,14 @@ public class data {
     public String getTimeFromArray(int position)
     {
         return timeArray.get(position);
+    }
+
+    public String getAmountOfSharesArray(int position) {
+        return amountOfSharesArray.get(position);
+    }
+
+    public String getValueofSharesArray(int position) {
+        return valueofSharesArray.get(position);
     }
 
     public int IsPositive(int position)

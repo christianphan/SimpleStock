@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.database.SQLException;
 import android.os.AsyncTask;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     String values[] = new String[4];
     String dates[] = new String[4];
     SearchView mSearchView;
+    YahooAPI yahooAPI;
+    YahooAPIRefesh yahooAPIRefesh;
 
     String[] item = null;
     SimpleCursorAdapter simpleAdapter;
@@ -81,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
          if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             String uri = intent.getDataString();
             index = uri;
-             new YahooAPI().execute();
+             yahooAPI = new YahooAPI();
+             yahooAPI.execute();
              mSearchView.setQuery("", false);
              mSearchView.clearFocus();
              searchItem.collapseActionView();
@@ -93,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextSubmit(String query) {
         index = query.toUpperCase();
-        new YahooAPI().execute();
+        yahooAPI = new YahooAPI();
+        yahooAPI.execute();
         mSearchView.setQuery("", false);
         mSearchView.clearFocus();
         searchItem.collapseActionView();
@@ -205,7 +210,32 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 // code for result
                 deleteStock = true;
             }
-            if (resultCode == RESULT_CANCELED) {
+            if (resultCode == RESULT_CANCELED && data != null) {
+
+                String amountfromfrag = data.getStringExtra("amount");
+                String valuefromfrag = data.getStringExtra("value");
+
+                Stock updatedStock = arrayList.get(stockposition);
+                updatedStock.value = datalist.getValueFromArray(stockposition);
+                updatedStock.percent = datalist.getPercentFromArray(stockposition);
+                updatedStock.change = datalist.getChangeFromArray(stockposition);
+                updatedStock.open = datalist.getOpenFromArray(stockposition);
+                updatedStock.high = datalist.getHighFromArray(stockposition);
+                updatedStock.low = datalist.getLowFromArray(stockposition);
+                updatedStock.volume = datalist.getVolumeFromArray(stockposition);
+                updatedStock.annual = datalist.getAnnualFromArray(stockposition);
+                updatedStock.time = datalist.getTimeFromArray(stockposition);
+                updatedStock.valueofShares = valuefromfrag;
+                updatedStock.amountofShares = amountfromfrag;
+                arrayList.set(stockposition, updatedStock);
+                String id = Integer.toString(updatedStock.primaryid);
+                myDB.updateData(id, updatedStock.index, updatedStock.name, updatedStock.value,
+                        updatedStock.percent, Integer.toString(updatedStock.color), updatedStock.change, updatedStock.open,
+                        updatedStock.high, updatedStock.low, updatedStock.volume, updatedStock.annual, updatedStock.time, updatedStock.amountofShares, updatedStock.valueofShares);
+
+
+
+
 
             }
         }
@@ -237,8 +267,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         myDB = new DataBaseHelper(this);
         mySEARCH = new CSVDatabase(this);
         getList();
-        loadSearch();
+        //loadSearch();
         thisContext =  getApplicationContext();
+        refresh();
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -260,6 +291,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String testChange = arrayList.get(stockposition).change;
                 String testAnnual = arrayList.get(stockposition).annual;
                 String testTime = arrayList.get(stockposition).time;
+                String testValueofStock = arrayList.get(stockposition).valueofShares;
+                String testAmountofStock = arrayList.get(stockposition).amountofShares;
                 String testdate1 = dates[0];
                 String testdate2 = dates[1];
                 String testdate3 = dates[2];
@@ -304,10 +337,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 b.putString("Price3", testprice3);
                 b.putString("Price4", testprice4);
                 b.putString("Price5", testprice5);
+                b.putString("Amount", testAmountofStock);
+                b.putString("ValueOfShares", testValueofStock);
                 i.putExtras(b);
 
 
-                startActivityForResult(i, 1);
+                startActivityForResult(i,1);
 
 
             }
@@ -318,50 +353,56 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         listview.setLongClickable(true);
 
         listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           final int pos, long id) {
-
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                final AlertDialog OptionDialog = builder.create();
-                OptionDialog.setTitle("Delete " + arrayList.get(pos).index );
-                LayoutInflater inflater = getLayoutInflater();
-                View dialoglayout = inflater.inflate(R.layout.stockdelete, null);
-                OptionDialog.setView(dialoglayout);
-                OptionDialog.show();
+                                                @Override
+                                                public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                                                               final int pos, long id) {
 
 
-                Button submit = (Button) dialoglayout.findViewById(R.id.deleteButton);
-                Button cancel = (Button) dialoglayout.findViewById(R.id.noDeleteButton);
-
-                submit.setOnClickListener(new View.OnClickListener() {
-
-
-                    @Override
-                    public void onClick(View v) {
-
-                        deleteItem(pos);
-
-                        OptionDialog.cancel();
-
-                    }
+                                                    final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                                    final AlertDialog OptionDialog = builder.create();
+                                                    OptionDialog.setTitle("Delete (" + arrayList.get(pos).index + ")" );
+                                                    LayoutInflater inflater = getLayoutInflater();
+                                                    View dialoglayout = inflater.inflate(R.layout.stockdelete, null);
+                                                    OptionDialog.setView(dialoglayout);
+                                                    OptionDialog.show();
 
 
-                });
+                                                    Button submit = (Button) dialoglayout.findViewById(R.id.deleteButton);
+                                                    Button cancel = (Button) dialoglayout.findViewById(R.id.noDeleteButton);
+
+                                                    submit.setOnClickListener(new View.OnClickListener() {
 
 
-                cancel.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
 
-                    @Override
-                    public void onClick(View v) {
-                        OptionDialog.cancel();
-                    }
+                                                            deleteItem(pos);
 
-                });
+                                                            OptionDialog.cancel();
 
-                return true;
-            }
-        });
+                                                        }
+
+
+                                                    });
+
+
+                                                    cancel.setOnClickListener(new View.OnClickListener() {
+
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            OptionDialog.cancel();
+                                                        }
+
+                                                    });
+
+                                                    return true;
+                                                }
+
+
+
+                                            });
+
+
 
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
@@ -401,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 datalist.setVaribles(stock.getName().toString(),stock.getQuote().getPrice().toString(), stock.getSymbol().toString(),
                         stock.getQuote().getChangeInPercent().toString(), stock.getQuote().getChange().toString(), stock.getQuote().getOpen().toString(),
                         stock.getQuote().getDayHigh().toString(), stock.getQuote().getDayLow().toString(),stock.getQuote().getVolume().toString(),
-                        stock.getQuote().getYearHigh().toString(), stock.getQuote().getLastTradeDateStr());
+                        stock.getQuote().getYearHigh().toString(), stock.getQuote().getLastTradeDateStr(), "0", "0");
 
                 ;
 
@@ -412,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 datalist.setStringName("error");;
                 return null;
             } catch (Exception e) {
-                datalist.setStringName("error");
+                datalist.setStringName("Invalid Index");
                 return null;
             }
 
@@ -425,20 +466,20 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             super.onPostExecute(avoid);
 
 
-            if (datalist.getStringName() != "error") {
+            if (datalist.getStringName() != "error" && datalist.getStringName() != "Invalid Index" ) {
 
 
                 Stock addedStock = new Stock(datalist.getStringName(), datalist.getStringValue(),
                         datalist.getStringIndex(), getApplicationContext(), datalist.getStringPercent(), 0, 0, datalist.getStringChange(),
                         datalist.getStringAnnual(), datalist.getStringHigh(),
-                        datalist.getStringVolume(), datalist.getStringOpen(), datalist.getStringLow(), datalist.getStringTime());
+                        datalist.getStringVolume(), datalist.getStringOpen(), datalist.getStringLow(), datalist.getStringTime(), datalist.getAmountofShares(), datalist.getValueofShares());
 
 
                 datalist.setStringColor(Integer.toString(addedStock.color));
 
                 myDB.insertData(datalist.getStringIndex(), datalist.getStringName(), datalist.getStringValue(),
                         datalist.getStringPercent(), datalist.getStringColor(), datalist.getStringChange(), datalist.getStringOpen(),datalist.getStringHigh(),
-                        datalist.getStringLow(), datalist.getStringVolume(), datalist.getStringAnnual(), datalist.getStringTime());
+                        datalist.getStringLow(), datalist.getStringVolume(), datalist.getStringAnnual(), datalist.getStringTime(), datalist.getAmountofShares(), datalist.getValueofShares());
 
 
                 //grabs stock id from myDB and sets the stock to have the same id
@@ -456,8 +497,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
 
 
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), "Index error", Toast.LENGTH_SHORT);
+            } else if(datalist.getStringName() == "Invalid Index" )
+            {
+                Toast toast = Toast.makeText(getApplicationContext(), "Sorry, (" +  index + ") is not availible", Toast.LENGTH_SHORT);
+                toast.show();
+
+            }
+            else
+            {
+                Toast toast = Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_SHORT);
                 toast.show();
 
             }
@@ -469,7 +517,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     public void refresh() {
 
-        new YahooAPIRefesh().execute();
+        yahooAPIRefesh = new YahooAPIRefesh();
+        yahooAPIRefesh.execute();
 
     }
 
@@ -479,51 +528,52 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected String doInBackground(String... args) {
 
+            if(arrayList.size() != 0) {
+                try {
 
-            try {
+                    //gets all indexes into an array
+                    String[] indexArray = new String[arrayList.size()];
+                    for (int j = 0; j < arrayList.size(); j++) {
+                        indexArray[j] = arrayList.get(j).index;
+                    }
 
-                //gets all indexes into an array
-                String[] indexArray = new String[arrayList.size()];
-                for(int j = 0; j < arrayList.size(); j++)
-                {
-                    indexArray[j] = arrayList.get(j).index;
+
+                    //single request
+                    Map<String, yahoofinance.Stock> stock = YahooFinance.get(indexArray);
+
+
+                    for (int i = 0; i < arrayList.size(); i++) {
+
+
+                        //updates new datalist with information from new refresh
+                        datalist.updateArrayList(i, stock.get(indexArray[i]).getQuote().getPrice().toString(),
+                                stock.get(indexArray[i]).getQuote().getChangeInPercent().toString(), stock.get(indexArray[i]).getQuote().getChange().toString(),
+                                stock.get(indexArray[i]).getQuote().getOpen().toString(), stock.get(indexArray[i]).getQuote().getDayHigh().toString(),
+                                stock.get(indexArray[i]).getQuote().getDayLow().toString(), stock.get(indexArray[i]).getQuote().getVolume().toString(), stock.get(indexArray[i]).getQuote().getYearHigh().toString(),
+                                stock.get(indexArray[i]).getQuote().getLastTradeDateStr());
+
+                    }
+
+
+                } catch (MalformedURLException ex) {
+                    datalist.setStringName("error");
+                    return "error";
+                } catch (IOException ex) {
+                    datalist.setStringName("error");
+                    return "error";
+                } catch (Exception e) {
+                    datalist.setStringName("error");
+                    return "error";
                 }
 
-
-                //single request
-                Map<String, yahoofinance.Stock> stock = YahooFinance.get(indexArray);
-
-
-
-                for (int i = 0; i < arrayList.size(); i++) {
-
-
-
-
-
-                    //updates new datalist with information from new refresh
-                    datalist.updateArrayList(i,stock.get(indexArray[i]).getQuote().getPrice().toString(),
-                            stock.get(indexArray[i]).getQuote().getChangeInPercent().toString(),stock.get(indexArray[i]).getQuote().getChange().toString(),
-                            stock.get(indexArray[i]).getQuote().getOpen().toString(), stock.get(indexArray[i]).getQuote().getDayHigh().toString(),
-                            stock.get(indexArray[i]).getQuote().getDayLow().toString(), stock.get(indexArray[i]).getQuote().getVolume().toString(), stock.get(indexArray[i]).getQuote().getYearHigh().toString(),
-                            stock.get(indexArray[i]).getQuote().getLastTradeDateStr());
-
-                }
-
-
             }
-            catch (MalformedURLException ex) {
-                datalist.setStringName("error");
-                return "error";
-            } catch (IOException ex) {
-                datalist.setStringName("error");
-                return "error";
-            } catch (Exception e) {
-                datalist.setStringName("error");
-                return "error";
+            else
+            {
+                datalist.setStringName("No list");
+                return null;
             }
 
-
+            datalist.setStringName("Success");
             return "Success";
 
 
@@ -533,7 +583,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         protected void onPostExecute(String avoid) {
 
             super.onPostExecute(avoid);
-            if (datalist.getStringName() != "error") {
+            if (datalist.getStringName() != "error" && datalist.getStringName() != "No list") {
 
                 for (int i = 0; i < arrayList.size(); i++) {
 
@@ -548,12 +598,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     updatedStock.volume = datalist.getVolumeFromArray(i);
                     updatedStock.annual = datalist.getAnnualFromArray(i);
                     updatedStock.time = datalist.getTimeFromArray(i);
+                    updatedStock.valueofShares = arrayList.get(i).valueofShares;
+                    updatedStock.amountofShares = arrayList.get(i).amountofShares;
 
                     arrayList.set(i, updatedStock);
                     String id = Integer.toString(updatedStock.primaryid);
                     myDB.updateData(id, updatedStock.index, updatedStock.name, updatedStock.value,
                             updatedStock.percent, Integer.toString(updatedStock.color), updatedStock.change, updatedStock.open,
-                            updatedStock.high, updatedStock.low, updatedStock.volume, updatedStock.annual, updatedStock.time);
+                            updatedStock.high, updatedStock.low, updatedStock.volume, updatedStock.annual, updatedStock.time, updatedStock.amountofShares, updatedStock.valueofShares);
 
 
                 }
@@ -567,9 +619,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 mSwipeRefreshLayout.setRefreshing(false);
 
             }
-            else{
+            else if(datalist.getStringName() != "No list"){
                 Toast toast = Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_SHORT);
                 toast.show();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            else if(datalist.getStringName() == "No list")
+            {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
 
@@ -600,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
 
             datalist.setVaribles(res.getString(2), res.getString(3), res.getString(1), res.getString(4), res.getString(6) ,res.getString(7), res.getString(8),
-                    res.getString(9), res.getString(10), res.getString(11) ,res.getString(12));
+                    res.getString(9), res.getString(10), res.getString(11) ,res.getString(12), res.getString(13), res.getString(14));
 
 
 
@@ -616,7 +672,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             Stock stockitem = new Stock(datalist.getStringName(), datalist.getStringValue(),
                     datalist.getStringIndex(), getApplicationContext(), datalist.getStringPercent(), Integer.parseInt(StringColor),Integer.parseInt(StringID),
                     datalist.getStringChange(), datalist.getStringAnnual(), datalist.getStringHigh(),
-                    datalist.getStringVolume(), datalist.getStringOpen(), datalist.getStringLow(), datalist.getStringTime());
+                    datalist.getStringVolume(), datalist.getStringOpen(), datalist.getStringLow(), datalist.getStringTime(), datalist.getAmountofShares(), datalist.getValueofShares());
 
             arrayList.add(stockitem);
             datalist.AddToArrayList();
@@ -632,66 +688,54 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     public void deleteItem(int position)
     {
-        String indexname = arrayList.get(position).index;
 
-        Integer deletedRow = myDB.deleteData(Integer.toString(arrayList.get(position).primaryid));
-        arrayList.remove(position);
-        adapter.notifyDataSetChanged();
-        datalist.removeArrayList(position);
+        try {
+            String indexname = arrayList.get(position).index;
 
-
-        Toast toast = Toast.makeText(getApplicationContext(), "("  + indexname + ")" + " Deleted", Toast.LENGTH_LONG);
-        toast.show();
-    }
+            Integer deletedRow = myDB.deleteData(Integer.toString(arrayList.get(position).primaryid));
+            arrayList.remove(position);
+            adapter.notifyDataSetChanged();
+            datalist.removeArrayList(position);
 
 
-
-    public boolean loadSearch()
-    {
-        Cursor res = mySEARCH.getAllData();
-
-        if (res.getCount() == 0) {
-
-            String[] row = null;
-            int total = 8;
-            try {
-                CSVReader reader = new CSVReader(new InputStreamReader(getAssets().open("companylist.csv")));
-                while((row = reader.readNext()) != null)
-                {
-                    mySEARCH.insertData(row[0], row[1]);
-                }
-                reader.close();
-                CSVReader reader2 = new CSVReader(new InputStreamReader(getAssets().open("companylist2.csv")));
-                while((row = reader2.readNext()) != null)
-                {
-                    mySEARCH.insertData(row[0], row[1]);
-                }
-                reader2.close();
-
-
-
-            } catch (IOException e) {
-
-            }
-
-
-            res.close();
-
-
-            return true;
+            Toast toast = Toast.makeText(getApplicationContext(), "(" + indexname + ")" + " Deleted", Toast.LENGTH_LONG);
+            toast.show();
         }
-        else
+        catch(Exception e)
         {
-            res.close();
-            return false;
+            Toast toast = Toast.makeText(getApplicationContext(), "Deletion Error", Toast.LENGTH_LONG);
+            toast.show();
+
         }
-
-
-
-
     }
 
 
 
+    //public void loadSearch()
+   // {
+    //    DataBaseReader myDbHelper = new DataBaseReader(getApplicationContext());
+   //     myDbHelper = new DataBaseReader(this);
+
+    //    try {
+
+  //          myDbHelper.createDataBase();
+
+  //      } catch (IOException ioe) {
+
+  //          throw new Error("Unable to create database");
+
+   //     }
+
+  //      try {
+
+    //        myDbHelper.openDataBase();
+
+   //     }catch(SQLException sqle){
+
+  //          throw sqle;
+
+  //      }
+
+  //  }
 
 }

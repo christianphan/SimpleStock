@@ -1,0 +1,36 @@
+                SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+                queryBuilder.setTables(DataBaseReader.TABLE_NAME);
+                String tester = SearchManager.SUGGEST_URI_PATH_QUERY.toString();
+
+
+        HashMap<String, String> columnMap = new HashMap<String, String>();
+        columnMap.put(BaseColumns._ID, DataBaseReader.COL_1 + " AS " + BaseColumns._ID);
+        columnMap.put(SearchManager.SUGGEST_COLUMN_TEXT_1, DataBaseReader.COL_2 + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1);
+        columnMap.put(SearchManager.SUGGEST_COLUMN_TEXT_2 , DataBaseReader.COL_3 + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2);
+        columnMap.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA, DataBaseReader.COL_2 + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+        queryBuilder.setProjectionMap(columnMap);
+
+        dbhelper = new DataBaseReader(getContext());
+
+        SQLiteDatabase db2 = dbhelper.getWritableDatabase();
+
+
+
+
+        Cursor cursor;
+            cursor = queryBuilder.query(db2, projection, DataBaseReader.COL_2 + " LIKE '" + test + "%' OR " + DataBaseReader.COL_3 + " LIKE '" + test + "%'" , selectionArgs, null, null, sortOrder, null);
+
+
+
+                            <android.support.design.widget.FloatingActionButton
+                                android:src="@drawable/ic_action_add"
+                                app:fabSize="normal"
+                                app:backgroundTint="@color/colorPrimary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right"
+                                android:layout_marginRight="10dp"
+                                android:id="@+id/addstocksbutton"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="20dp" />

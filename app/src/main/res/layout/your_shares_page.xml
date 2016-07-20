@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+
+
+        <LinearLayout
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/yoursharestitle"
+        android:text="Current Shares"
+        android:textColor="#303032"
+        android:textSize="20dp"
+        android:layout_marginTop="5dp"/>
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:textSize="25dp"
+                android:textColor="#1a1010"
+                android:layout_gravity="center"
+                android:id="@+id/amountofShares"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="5"
+                android:textSize="15dp"
+                android:id="@+id/AmountOfSharesTitle"
+                android:text="Amount of Shares"
+                android:layout_gravity="center"
+                android:textColor="#303032"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:textSize="25dp"
+                android:textColor="#1a1010"
+                android:layout_gravity="center"
+                android:id="@+id/pricesofshares"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="5"
+                android:textSize="15dp"
+                android:id="@+id/pricesofsharesTitle"
+                android:text="Total Price of Shares"
+                android:layout_gravity="center"
+                android:textColor="#303032"/>
+
+
+
+
+
+        </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:textSize="25dp"
+                android:textColor="#1a1010"
+                android:layout_gravity="center"
+                android:id="@+id/differencedearned" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="5"
+                android:textSize="15dp"
+                android:id="@+id/differencedearnedtitle"
+                android:text="Total Return"
+                android:layout_gravity="center"
+                android:textColor="#303032"/>
+
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:textSize="25dp"
+                android:textColor="#1a1010"
+                android:layout_gravity="center"
+                android:id="@+id/equity" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_weight="5"
+                android:textSize="15dp"
+                android:id="@+id/equitytitle"
+                android:text="Total Equity"
+                android:layout_gravity="center"
+                android:textColor="#303032"/>
+
+
+        </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/SpecialButton"
+            android:text="@string/buttonadd"
+            android:layout_weight="5"
+            android:id="@+id/addstocksbutton"/>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/removesharesbutton"
+            android:text="@string/buttonremove"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_weight="5"/>
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

@@ -34,6 +34,7 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -74,9 +75,15 @@ public class AdditonalInfo extends AppCompatActivity {
     private String price4 = "";
     private String price5 = "";
     private String time = "";
+    private String amountofShares;
+    private String valueofShares;
     TabAdapter adapterPageview;
     ReadRss readRss = null;
     NewActivity newActivity = null;
+    AnnualInfo loadAnnual = null;
+    int hasloadedpage2 = 0;
+    int hasloadedpage3 = 0;
+    final DecimalFormat f = new DecimalFormat("#0.00");
 
     public ArrayList<News> getArrayList() {
         return arrayList;
@@ -119,6 +126,8 @@ public class AdditonalInfo extends AppCompatActivity {
         price4 = bundle.getString("Price4");
         price5 = bundle.getString("Price5");
         time = bundle.getString("Time");
+        amountofShares = bundle.getString("Amount");
+        valueofShares = bundle.getString("ValueOfShares");
 
 
 
@@ -133,6 +142,9 @@ public class AdditonalInfo extends AppCompatActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(adapterPageview);
 
+        //allows 4 fragments to be in memeory
+        viewPager.setOffscreenPageLimit(4);
+
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -142,23 +154,87 @@ public class AdditonalInfo extends AppCompatActivity {
         newActivity = new NewActivity();
         newActivity.execute();
 
-        readRss = new ReadRss();
-        readRss.execute();
+
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                if(position == 1 && readRss == null && hasloadedpage2 == 0)
+                {
+                    hasloadedpage2++;
+                    readRss = new ReadRss();
+                    readRss.execute();
+
+                }
+
+                if(position == 2 && loadAnnual == null && hasloadedpage3 == 0)
+                {
+                    hasloadedpage3++;
+                    loadAnnual = new AnnualInfo();
+                    loadAnnual.execute();
+                }
 
 
 
-    }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
+
+
+
+
+}
 
 
     @Override
     public void onBackPressed()
     {
-        if (readRss != null)
+        if (readRss != null) {
             readRss.cancel(true);
 
-        if (newActivity != null)
+        }
+
+        if (newActivity != null) {
             newActivity.cancel(true);
 
+        }
+
+        if(loadAnnual != null)
+        {
+            loadAnnual.cancel(true);
+        }
+
+
+        View fragment4 = adapterPageview.getRegisteredFragment(3).getView();
+        TextView amountFromText = (TextView) fragment4.findViewById(R.id.amountofShares);
+        TextView valueFromText = (TextView) fragment4.findViewById(R.id.pricesofshares);
+
+        String amountsent = amountFromText.getText().toString();
+        String valuesent = valueFromText.getText().toString();
+        valuesent = valuesent.replace("$", "");
+
+
+
+        Intent output = new Intent();
+        output.putExtra("amount", amountsent);
+        output.putExtra("value", valuesent);
+
+
+
+        setResult(RESULT_CANCELED,output);
+        finish();
         super.onBackPressed();
     }
 
@@ -166,18 +242,53 @@ public class AdditonalInfo extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.stock_settings:
+
+                if (readRss != null) {
+                    readRss.cancel(true);
+
+                }
+
+                if (newActivity != null) {
+                    newActivity.cancel(true);
+                }
+
+                if(loadAnnual != null)
+                {
+                    loadAnnual.cancel(true);
+                }
                 setResult(RESULT_OK);
                 finish();
                 return true;
             case android.R.id.home:
 
-                if (readRss != null)
+                if (readRss != null) {
                     readRss.cancel(true);
 
-                if (newActivity != null)
-                    newActivity.cancel(true);
+                }
 
-                setResult(RESULT_CANCELED);
+                if (newActivity != null) {
+                    newActivity.cancel(true);
+                }
+
+                if(loadAnnual != null)
+                {
+                    loadAnnual.cancel(true);
+                }
+
+                View fragment4 = adapterPageview.getRegisteredFragment(3).getView();
+                TextView amountFromText = (TextView) fragment4.findViewById(R.id.amountofShares);
+                TextView valueFromText = (TextView) fragment4.findViewById(R.id.pricesofshares);
+
+                String amountsent = amountFromText.getText().toString();
+                String valuesent = valueFromText.getText().toString();
+                valuesent = valuesent.replace("$", "");
+
+
+                Intent output = new Intent();
+                output.putExtra("amount", amountsent);
+                output.putExtra("value", valuesent);
+
+                setResult(RESULT_CANCELED,output);
                 finish();
                 return true;
         }
@@ -287,6 +398,211 @@ public class AdditonalInfo extends AppCompatActivity {
         return getApplicationContext();
     }
 
+    public String getAmountofShares() {
+        return amountofShares;
+    }
+
+    public String getValueofShares() {
+        return valueofShares;
+    }
+
+    public class AnnualInfo extends AsyncTask<Void,Void, Void>
+    {
+        String result = "";
+        String annualhighestdata = "";
+        String annuallowestdata = "";
+        String highestpercentchangedata = "";
+        String lowestpercentchangedata = "";
+        ArrayList<String> xaxis = new ArrayList<>();
+        ArrayList<Entry> yaxis = new ArrayList<>();
+
+
+
+        @Override
+        protected Void doInBackground(Void... args) {
+
+            try
+            {
+                yahoofinance.Stock stock = YahooFinance.get(index);
+                annualhighestdata = stock.getQuote().getYearHigh().toString();
+                annuallowestdata = stock.getQuote().getYearLow().toString();
+                highestpercentchangedata = stock.getQuote().getChangeFromYearHighInPercent().toString();
+                lowestpercentchangedata = stock.getQuote().getChangeFromYearLowInPercent().toString();
+
+                List<HistoricalQuote> history = stock.getHistory(Interval.MONTHLY);
+
+                for(int i = 0; i < 12 ; i++)
+                {
+                    xaxis.add(i,"");
+                    yaxis.add(new Entry(Float.parseFloat(history.get(11 - i).getAdjClose().toString()), i));
+
+                }
+
+
+
+            }
+
+            catch (MalformedURLException ex) {
+                result = "Connection Error";
+                return null;
+            } catch (IOException ex) {
+                result = "Connection Error";
+                ;
+                return null;
+            } catch (Exception e) {
+                result = "Connection Error";
+                return null;
+            }
+
+
+
+
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void avoid) {
+
+            if (result != "Connection Error") {
+
+                View fragment3 = adapterPageview.getRegisteredFragment(2).getView();
+
+                CircularProgressView progressView = (CircularProgressView) fragment3.findViewById(R.id.progress_view3);
+                TextView annualtitleeshown = (TextView) fragment3.findViewById(R.id.Annual_Title);
+                TextView annualhighestshown = (TextView) fragment3.findViewById(R.id.annualhighest);
+                TextView highesttitleshown = (TextView) fragment3.findViewById(R.id.highestTitle);
+                TextView lowestshown = (TextView) fragment3.findViewById(R.id.annuallowest);
+                TextView lowesttitleshown = (TextView) fragment3.findViewById(R.id.lowestTitle);
+                TextView lowtitleshown = (TextView) fragment3.findViewById(R.id.lowTitle);
+                TextView annualhighchangeshown = (TextView) fragment3.findViewById(R.id.annualhighchange);
+                TextView highpercenttitle = (TextView) fragment3.findViewById(R.id.highPercentTitle);
+                TextView annuallowchangeshown = (TextView) fragment3.findViewById(R.id.annuallowChange);
+                TextView lowchangetitleshown = (TextView) fragment3.findViewById(R.id.lowTitle);
+                LineChart chart = (LineChart) fragment3.findViewById(R.id.chartannual);
+
+
+                annualhighchangeshown.setText(highestpercentchangedata + "%");
+                if (Double.parseDouble(highestpercentchangedata) > 0) {
+                    annualhighchangeshown.setText("+" + highestpercentchangedata + "%");
+                    annualhighchangeshown.setTextColor(Color.parseColor("#73C82C"));
+
+                } else if (Double.parseDouble(highestpercentchangedata) < 0) {
+                    annualhighchangeshown.setText(highestpercentchangedata + "%");
+                    annualhighchangeshown.setTextColor(Color.parseColor("#B00B1E"));
+
+
+                }
+
+                double annualhighestdataformat = Double.parseDouble(annualhighestdata);
+                double annuallowestdataformat = Double.parseDouble(annuallowestdata);
+                annualhighestshown.setText("$" + f.format(annualhighestdataformat));
+                lowestshown.setText("$" + f.format(annuallowestdataformat));
+
+
+                annuallowchangeshown.setText(lowestpercentchangedata + "%");
+                if (Double.parseDouble(lowestpercentchangedata) > 0) {
+                    annuallowchangeshown.setText("+" + lowestpercentchangedata + "%");
+                    annuallowchangeshown.setTextColor(Color.parseColor("#73C82C"));
+
+                } else if (Double.parseDouble(lowestpercentchangedata) < 0) {
+                    annuallowchangeshown.setText(lowestpercentchangedata + "%");
+                    annuallowchangeshown.setTextColor(Color.parseColor("#B00B1E"));
+
+
+                }
+
+                String[] Xaxis = new String[xaxis.size()];
+                for (int i = 0; i < Xaxis.length; i++) {
+                    Xaxis[i] = xaxis.get(i);
+                }
+
+                ArrayList<ILineDataSet> lineDataSet = new ArrayList<>();
+                LineDataSet lineDataSet1 = new LineDataSet(yaxis, index + " value");
+                lineDataSet1.setDrawCircles(true);
+                lineDataSet1.setCircleColorHole(Color.BLUE);
+                lineDataSet1.setColor(Color.BLUE);
+                lineDataSet1.setDrawFilled(true);
+                lineDataSet1.setCircleColor(Color.BLUE);
+                lineDataSet1.setDrawCubic(true);
+
+                lineDataSet.add(lineDataSet1);
+
+                YAxis leftAxis = chart.getAxisLeft();
+                YAxis rightAxis = chart.getAxisRight();
+
+                float lowestprice = 0;
+                float highestprice = 0;
+                int degree = 0;
+
+                for (int i = 0; i < yaxis.size(); i++) {
+                    if (lowestprice > yaxis.get(i).getVal()) {
+                        lowestprice = yaxis.get(i).getVal();
+
+                    } else if (lowestprice == 0) {
+                        lowestprice = yaxis.get(i).getVal();
+                    }
+
+                    if (highestprice < yaxis.get(i).getVal()) {
+                        highestprice = yaxis.get(i).getVal();
+                    }
+
+
+                }
+
+
+                degree = Math.round(highestprice - lowestprice);
+
+
+                chart.getAxisRight().setStartAtZero(false);
+                chart.getAxisLeft().setStartAtZero(false);
+                leftAxis.setAxisMinValue(lowestprice - degree);
+                rightAxis.setAxisMinValue(lowestprice - degree);
+                chart.setPinchZoom(false);
+
+
+                chart.setDescription("Close Value Over Last 12 Months");
+
+                chart.setData(new LineData(Xaxis, lineDataSet));
+                chart.notifyDataSetChanged();
+                chart.invalidate();
+
+
+                annualtitleeshown.setVisibility(fragment3.VISIBLE);
+                annualhighchangeshown.setVisibility(fragment3.VISIBLE);
+                annualhighestshown.setVisibility(fragment3.VISIBLE);
+                highesttitleshown.setVisibility(fragment3.VISIBLE);
+                lowestshown.setVisibility(fragment3.VISIBLE);
+                lowesttitleshown.setVisibility(fragment3.VISIBLE);
+                lowtitleshown.setVisibility(fragment3.VISIBLE);
+                highpercenttitle.setVisibility(fragment3.VISIBLE);
+                annuallowchangeshown.setVisibility(fragment3.VISIBLE);
+                lowchangetitleshown.setVisibility(fragment3.VISIBLE);
+                chart.setVisibility(fragment3.VISIBLE);
+
+                progressView.setVisibility(fragment3.GONE);
+
+            }
+            else
+            {
+                View fragment3 = adapterPageview.getRegisteredFragment(2).getView();
+                TextView annualtitleeshown = (TextView) fragment3.findViewById(R.id.Annual_Title);
+                CircularProgressView progressView = (CircularProgressView) fragment3.findViewById(R.id.progress_view3);
+
+                annualtitleeshown.setText("Connection Error");
+                progressView.setVisibility(fragment3.GONE);
+                annualtitleeshown.setVisibility(fragment3.VISIBLE);
+
+            }
+        }
+
+
+
+
+
+
+    }
 
 
 
@@ -295,6 +611,8 @@ public class AdditonalInfo extends AppCompatActivity {
 
 
         private String result;
+        ArrayList<String> xaxis = new ArrayList<>();
+        ArrayList<Entry> yaxis = new ArrayList<>();
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -313,19 +631,25 @@ public class AdditonalInfo extends AppCompatActivity {
                 open = stock.getQuote().getOpen().toString();
                 high = stock.getQuote().getDayHigh().toString();
                 low = stock.getQuote().getDayLow().toString();
-                volume = stock.getQuote().getVolume().toString();
-                annual = stock.getQuote().getYearHigh().toString();
+                annual = stock.getStats().getMarketCap().toString();
                 time = stock.getQuote().getLastTradeDateStr();
 
-                price5 = stock.getHistory(Interval.DAILY).get(0).getClose().toString();
-                price4 = stock.getHistory(Interval.DAILY).get(1).getClose().toString();
-                price3 = stock.getHistory(Interval.DAILY).get(2).getClose().toString();
-                price2 = stock.getHistory(Interval.DAILY).get(3).getClose().toString();
-                price1 = stock.getHistory(Interval.DAILY).get(4).getClose().toString();
-                date4 = "";
-                date3 = "";
-                date2 = "";
-                date1 = "";
+
+                List<HistoricalQuote> history = stock.getHistory(Interval.DAILY);
+
+                for(int i = 0; i < 5 ; i++)
+                {
+                    if( i == 4)
+                    {
+                        xaxis.add(i,"Today");
+                    }
+                    else
+                    {
+                        xaxis.add(i,"");
+                    }
+                    yaxis.add(new Entry(Float.parseFloat(history.get(4 - i).getAdjClose().toString()), i));
+
+                }
 
             } catch (MalformedURLException ex) {
                 result = "Connection Error";
@@ -360,11 +684,13 @@ public class AdditonalInfo extends AppCompatActivity {
 
                 //value
                 TextView valueshown = (TextView) fragment1.findViewById(R.id.valueadditional);
-                valueshown.setText("$" + value);
+                double valueformat = Double.parseDouble(value);
+                valueshown.setText("$" + f.format(valueformat));
 
                 //open
                 TextView openshown = (TextView) fragment1.findViewById(R.id.openadditional);
-                openshown.setText("$" + open);
+                double openformat = Double.parseDouble(open);
+                openshown.setText("$" + f.format(openformat));
 
 
                 //time
@@ -373,37 +699,56 @@ public class AdditonalInfo extends AppCompatActivity {
 
                 //high
                 TextView highshown = (TextView) fragment1.findViewById(R.id.highadditional);
-                highshown.setText("$" + high );
+                double highformat = Double.parseDouble(high);
+                highshown.setText("$" + f.format(highformat ));
 
                 //low
                 TextView lowshown = (TextView) fragment1.findViewById(R.id.lowadditional);
-                lowshown.setText( "$" + low);
+                double lowformat = Double.parseDouble(low);
+                lowshown.setText( "$" + f.format(lowformat));
 
                 //change
                 TextView changeshown = (TextView) fragment1.findViewById(R.id.changeadditional);
-                changeshown.setText(change);
-                if(test == 1)
+                double changeformat = Double.parseDouble(change);
+                changeshown.setText(f.format(changeformat));
+                changeshown.setTextColor(Color.parseColor("#1a1010"));
+
+                try {
+                    if (Double.parseDouble(change) > 0) {
+
+                        changeshown.setText("+" + f.format(changeformat) );
+                        changeshown.setTextColor(Color.parseColor("#73C82C"));
+
+                    } else if (Double.parseDouble(change) < 0) {
+                        changeshown.setTextColor(Color.parseColor("#B00B1E"));
+
+                    }
+                }
+                catch (Exception e)
                 {
 
-                    changeshown.setText("+" + change);
-                }
-                else if (test == 0)
-                {
-                    changeshown.setTextColor(Color.parseColor("#B00B1E"));
                 }
 
 
                 //percent
                 TextView percentshown = (TextView) fragment1.findViewById(R.id.percentadditional);
                 percentshown.setText(percent + "%");
-                if(test == 1)
+                percentshown.setTextColor(Color.parseColor("#1a1010"));
+
+                try {
+                    if (Double.parseDouble(percent) > 0) {
+
+                        percentshown.setText("+" + percent + "%");
+                        percentshown.setTextColor(Color.parseColor("#73C82C"));
+
+                    } else if (Double.parseDouble(percent) < 0) {
+                        percentshown.setTextColor(Color.parseColor("#B00B1E"));
+
+                    }
+                }
+                catch (Exception e)
                 {
 
-                    percentshown.setText("+" + percent + "%");
-                }
-                else if (test == 0)
-                {
-                    percentshown.setTextColor(Color.parseColor("#B00B1E"));
                 }
 
 
@@ -415,31 +760,13 @@ public class AdditonalInfo extends AppCompatActivity {
                 TextView volumeshown = (TextView) fragment1.findViewById(R.id.volumeadditional);
                 volumeshown.setText(volumeinput);
 
-                //annual
+                //marketcap
+                double marketint = Double.parseDouble(annual);
+                String marketinput = String.format("%.2fB", marketint/ 1000000000.0);
                 TextView annualshown = (TextView) fragment1.findViewById(R.id.annualadditional);
-                annualshown.setText(annual);
+                annualshown.setText("$" + marketinput);
 
                 //chart
-                ArrayList<String> xaxis = new ArrayList<>();
-                ArrayList<Entry> yaxis = new ArrayList<>();
-
-
-
-                xaxis.add(0,date1 );
-                xaxis.add(1, date2);
-                xaxis.add(2, date3);
-                xaxis.add(3, date4);
-                xaxis.add(4, "Today");
-
-
-
-                yaxis.add(new Entry(Float.parseFloat(price1), 0));
-                yaxis.add(new Entry(Float.parseFloat(price2), 1));
-                yaxis.add(new Entry(Float.parseFloat(price3), 2));
-                yaxis.add(new Entry(Float.parseFloat(price4), 3));
-                yaxis.add(new Entry(Float.parseFloat(price5), 4));
-
-
                 LineChart chart = (LineChart) fragment1.findViewById(R.id.chart);
 
 
@@ -456,6 +783,7 @@ public class AdditonalInfo extends AppCompatActivity {
                 lineDataSet1.setColor(Color.BLUE);
                 lineDataSet1.setDrawFilled(true);
                 lineDataSet1.setCircleColor(Color.BLUE);
+                lineDataSet1.setDrawCubic(true);
 
                 lineDataSet.add(lineDataSet1);
 
@@ -565,11 +893,17 @@ public class AdditonalInfo extends AppCompatActivity {
             try{
                 Document doc = Jsoup.connect(url +  index).get();
                 Elements elements = doc.select("item > title");
+
                 Elements elements2 = doc.select("item > link");
                 Elements elements3 = doc.select("item > pubDate");
 
+                if(elements.size() == 0 || elements2.size() == 0 || elements3.size() == 0)
+                {
+                    throw new Exception();
+                }
                 for(Element element : elements)
                 {
+
                     titles.add(element.ownText());
                 }
 
@@ -589,13 +923,13 @@ public class AdditonalInfo extends AppCompatActivity {
 
             }
             catch (MalformedURLException ex) {
-                result = "error";
+                result = "Connection Error";
                 return null;
             } catch (IOException ex) {
                 result = "error";
                 return null;
             } catch (Exception e) {
-                result = "error";
+                result = "No News Availible";
                 return null;
             }
 
@@ -606,7 +940,7 @@ public class AdditonalInfo extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            if(result != "error" && !isCancelled())
+            if(result != "No News Availible" && !isCancelled() && result != "Connection Error")
             {
 
                 View fragment2 = adapterPageview.getRegisteredFragment(1).getView();
@@ -623,6 +957,37 @@ public class AdditonalInfo extends AppCompatActivity {
                 }
 
 
+                CircularProgressView progressView = (CircularProgressView) fragment2.findViewById(R.id.progress_view2);
+                progressView.setVisibility(fragment2.GONE);
+                adapter.notifyDataSetChanged();
+
+
+            }
+            else if(result == "Connection Error")
+            {
+                View fragment2 = adapterPageview.getRegisteredFragment(1).getView();
+                arrayList = new ArrayList<News>(Arrays.asList(items));
+                adapter = new new_adapter(getContext(), arrayList);
+
+                final ListView listview = (ListView) fragment2.findViewById(R.id.listView2);
+                listview.setAdapter(adapter);
+                News addedNews = new News(result, null, "Not Availible");
+                arrayList.add(addedNews);
+                CircularProgressView progressView = (CircularProgressView) fragment2.findViewById(R.id.progress_view2);
+                progressView.setVisibility(fragment2.GONE);
+                adapter.notifyDataSetChanged();
+
+            }
+            else if(result == "No News Availible")
+            {
+                View fragment2 = adapterPageview.getRegisteredFragment(1).getView();
+                arrayList = new ArrayList<News>(Arrays.asList(items));
+                adapter = new new_adapter(getContext(), arrayList);
+
+                final ListView listview = (ListView) fragment2.findViewById(R.id.listView2);
+                listview.setAdapter(adapter);
+                News addedNews = new News(result, null, "Not Availible");
+                arrayList.add(addedNews);
                 CircularProgressView progressView = (CircularProgressView) fragment2.findViewById(R.id.progress_view2);
                 progressView.setVisibility(fragment2.GONE);
                 adapter.notifyDataSetChanged();

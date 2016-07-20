@@ -253,7 +253,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:textSize="25dp"
-                    android:textColor="#73C82C"
                     android:layout_gravity="center"
                     android:id="@+id/changeadditional" />
 
@@ -340,7 +339,7 @@
                     android:layout_weight="5"
                     android:textSize="15dp"
                     android:id="@+id/annualTitle"
-                    android:text="Annual Highest"
+                    android:text="Market Cap"
                     android:layout_gravity="center"
                     android:textColor="#303032"/>
 

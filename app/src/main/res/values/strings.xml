@@ -7,6 +7,12 @@
 
     <string name="search_hint">Enter Symbol</string>
     <string name="app_label">Label</string>
+    <string name="edittexthint2">Enter Price of Shares</string>
+    <string name="edittexthint">Enter Number Of Shares</string>
+    <string name="hintstarting">0</string>
+    <string name="buttonadd">Add Shares</string>
+    <string name="buttonremove">Reset Shares</string>
+
 
 
     </resources>

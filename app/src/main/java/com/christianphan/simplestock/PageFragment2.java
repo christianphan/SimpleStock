@@ -80,9 +80,13 @@ public class PageFragment2 extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                Intent intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(activity.getArrayList().get(position).getLink()));
-                startActivity(intent);
+
+                if(activity.getArrayList().get(position).getLink() != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(activity.getArrayList().get(position).getLink()));
+                    startActivity(intent);
+
+                }
 
             }
 

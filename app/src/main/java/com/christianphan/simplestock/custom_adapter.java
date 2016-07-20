@@ -14,12 +14,16 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
  * Created by christian on 6/5/16.
  */
 public class custom_adapter  extends ArrayAdapter<Stock> {
+
+
+    final DecimalFormat f = new DecimalFormat("#0.00");
 
 
     custom_adapter(Context context,ArrayList<Stock> stocks)
@@ -73,11 +77,13 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         }
 
 
+        double valuedouble = Double.parseDouble(stocklistitem.value);
+        double changedouble = Double.parseDouble(stocklistitem.change);
 
 
 
         textname.setText(stocklistitem.name);
-        valuename.setText(stocklistitem.value + " ");
+        valuename.setText(f.format(valuedouble) + " ");
         imageletter.setImageDrawable(drawable);
         indexname.setText("(" + stocklistitem.index + ")");
         imagearrow.setImageDrawable(arrow);
@@ -89,7 +95,7 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         {
 
             percentchange.setTextColor(Color.parseColor("#e53935"));
-            valuechange.setText(stocklistitem.change + " ");
+            valuechange.setText(f.format(changedouble) + " ");
             valuechange.setTextColor(Color.parseColor("#e53935"));
 
 
@@ -97,7 +103,7 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
         else if(Double.parseDouble(stocklistitem.percent) > 0)
         {
             percentchange.setTextColor(Color.parseColor("#43A047"));
-            valuechange.setText("+" + stocklistitem.change + " ");
+            valuechange.setText("+" + f.format(changedouble)+ " ");
             valuechange.setTextColor(Color.parseColor("#43A047"));
         }
 
@@ -110,12 +116,6 @@ public class custom_adapter  extends ArrayAdapter<Stock> {
     }
 
 
-    public void refresh(Context context)
-    {
-
-
-
-    }
 
 
 

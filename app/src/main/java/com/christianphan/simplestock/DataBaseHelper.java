@@ -27,6 +27,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COL_11 = "VOLUME";
     public static final String COL_12 = "ANNUAL";
     public static final String COL_13 = "TIME";
+    public static final String COL_14 = "NUMOFSHARES";
+    public static final String COL_15 = "VALUEOFSHARES";
 
 
     public DataBaseHelper(Context context) {
@@ -43,7 +45,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     + COL_3 + " TEXT," + COL_4 + " TEXT," + COL_5 + " TEXT," + COL_6 + " TEXT," +
                     COL_7 + " TEXT," + COL_8 + " TEXT," + COL_9 + " TEXT," +
                     COL_10 + " TEXT," +  COL_11 + " TEXT," + COL_12 + " TEXT," +
-                    COL_13 + " TEXT" + ")";
+                    COL_13 + " TEXT," + COL_14 + " TEXT," +
+                    COL_15 + " TEXT" +  ")";
 
             db.execSQL(CREATE_CONTACTS_TABLE);
 
@@ -64,7 +67,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     public boolean insertData(String indexName, String name, String price, String percent, String color, String change, String open,
-                              String high, String low, String volume, String annual, String time)
+                              String high, String low, String volume, String annual, String time, String sharesown, String valueofshares)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -80,7 +83,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_10, low);
         contentValues.put(COL_11, volume);
         contentValues.put(COL_12, annual);
-        contentValues.put(COL_13, time);;
+        contentValues.put(COL_13, time);
+        contentValues.put(COL_14, sharesown);
+        contentValues.put(COL_15, valueofshares);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
 
@@ -105,7 +110,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateData(String id, String indexName, String name, String price, String percent, String color, String change, String open,
-                              String high, String low, String volume, String annual, String time)
+                              String high, String low, String volume, String annual, String time, String sharesown, String valueofshares)
     {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -123,11 +128,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_11, volume);
         contentValues.put(COL_12, annual);
         contentValues.put(COL_13, time);
+        contentValues.put(COL_14, sharesown);
+        contentValues.put(COL_15, valueofshares);
 
         db.update(TABLE_NAME ,contentValues,"ID = ?",new String[] { id });
         return true;
 
     }
+
 
     public Cursor getAllData()
     {

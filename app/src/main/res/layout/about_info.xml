@@ -21,30 +21,16 @@
         android:layout_marginRight="30dp"
         android:layout_marginLeft="25dp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:layout_marginTop="5dp">
+
 
         <Button
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Rate App"
             android:id="@+id/rateappbutton"
-            android:layout_weight="1" />
+            android:layout_gravity="center"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Donate"
-            android:id="@+id/DonateButton"
-            android:layout_weight="1" />
-
-
-
-    </LinearLayout>
 
 
 

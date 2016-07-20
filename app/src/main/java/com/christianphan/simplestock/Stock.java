@@ -27,19 +27,13 @@ public class Stock {
     public String open;
     public String low;
     public String time;
-    public String Stringdate = "";
-    public String Stringdate2 = "";
-    public String Stringdate3 = "";
-    public String Stringdate4 = "";
-    public String Stringprice1 = "";
-    public String Stringprice2 = "";
-    public String Stringprice3 = "";
-    public String Stringprice4 = "";
+    public String amountofShares;
+    public String valueofShares;
 
 
     public Stock(String name_input, String value_input, String index_input, Context context_input,
                  String percent_input, int color_input, int id_input, String change_input, String annual_input, String high_input,
-                 String volume_input, String open_input, String low_input, String time_input)
+                 String volume_input, String open_input, String low_input, String time_input, String amountofshares_input, String valueofShares_input)
     {
         this.name = name_input;
         this.value = value_input;
@@ -55,6 +49,8 @@ public class Stock {
         this.open = open_input;
         this.low = low_input;
         this.time = time_input;
+        this.amountofShares = amountofshares_input;
+        this.valueofShares = valueofShares_input;
 
 
 

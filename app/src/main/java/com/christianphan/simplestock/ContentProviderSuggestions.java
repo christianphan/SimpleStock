@@ -5,6 +5,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -12,7 +13,21 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 /**
@@ -21,7 +36,7 @@ import java.util.HashMap;
 public class ContentProviderSuggestions extends ContentProvider {
 
     private static final String AUTH = "com.christianphan.simplestock.ContentProviderSuggestions";
-    private static final Uri SUGGESTIONS_URI = Uri.parse("content://" + AUTH + "/" + CSVDatabase.TABLE_NAME);
+    private static final Uri SUGGESTIONS_URI = Uri.parse("content://" + AUTH + "/" + DataBaseReader.TABLE_NAME);
 
     final static int SUGGESTIONS = 1;
     final static int SUGGESTIONS2 = 2;
@@ -33,7 +48,7 @@ public class ContentProviderSuggestions extends ContentProvider {
 
 
     SQLiteDatabase db;
-    CSVDatabase dbhelper;
+    DataBaseReader dbhelper;
 
     private  UriMatcher uriMatcher;
 
@@ -51,13 +66,13 @@ public class ContentProviderSuggestions extends ContentProvider {
     @Override
     public boolean onCreate()
     {
-        dbhelper = new CSVDatabase(getContext());
+        dbhelper = new DataBaseReader(getContext());
 
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTH, CSVDatabase.TABLE_NAME, SUGGESTIONS);
-        uriMatcher.addURI(AUTH, CSVDatabase.TABLE_NAME + "/#", SUGGESTIONS2);
+        uriMatcher.addURI(AUTH, DataBaseReader.TABLE_NAME, SUGGESTIONS);
+        uriMatcher.addURI(AUTH, DataBaseReader.TABLE_NAME + "/#", SUGGESTIONS2);
         // For suggestions table
-        uriMatcher.addURI(AUTH,CSVDatabase.TABLE_NAME + "/" + SearchManager.SUGGEST_URI_PATH_QUERY,
+        uriMatcher.addURI(AUTH,DataBaseReader.TABLE_NAME + "/" + SearchManager.SUGGEST_URI_PATH_QUERY,
                 SUGGESTIONS3);
         uriMatcher.addURI(AUTH,SearchManager.SUGGEST_URI_PATH_QUERY,SUGGESTIONS4);
         uriMatcher.addURI(AUTH, "/search_suggest_query/" , SUGGESTIONS5);
@@ -72,7 +87,7 @@ public class ContentProviderSuggestions extends ContentProvider {
 
         if(uriMatcher.match(uri) == SUGGESTIONS)
         {
-            db.insert(CSVDatabase.TABLE_NAME,null, values);
+            db.insert(DataBaseReader.TABLE_NAME,null, values);
         }
         db.close();
 
@@ -86,9 +101,6 @@ public class ContentProviderSuggestions extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
-        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(CSVDatabase.TABLE_NAME);
-        String tester = SearchManager.SUGGEST_URI_PATH_QUERY.toString();
         String test = "";
 
 
@@ -98,23 +110,62 @@ public class ContentProviderSuggestions extends ContentProvider {
         int uriType = uriMatcher.match(uri);
 
 
-        HashMap<String, String> columnMap = new HashMap<String, String>();
-        columnMap.put(BaseColumns._ID, CSVDatabase.COL_1 + " AS " + BaseColumns._ID);
-        columnMap.put(SearchManager.SUGGEST_COLUMN_TEXT_1, CSVDatabase.COL_2 + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1);
-        columnMap.put(SearchManager.SUGGEST_COLUMN_TEXT_2 , CSVDatabase.COL_3 + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2);
-        columnMap.put(SearchManager.SUGGEST_COLUMN_INTENT_DATA, CSVDatabase.COL_2 + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA);
-        queryBuilder.setProjectionMap(columnMap);
 
-        dbhelper = new CSVDatabase(getContext());
-        //database = dbhelper.getReadableDatabase();
-
-        SQLiteDatabase db2 = dbhelper.getWritableDatabase();
+        MatrixCursor cursor2 = new MatrixCursor(
+                new String[] {
+                        BaseColumns._ID,
+                        SearchManager.SUGGEST_COLUMN_TEXT_1,
+                        SearchManager.SUGGEST_COLUMN_TEXT_2,
+                        SearchManager.SUGGEST_COLUMN_INTENT_DATA
+                }
+        );
 
 
-        Cursor cursor;
-            cursor = queryBuilder.query(db2, projection, CSVDatabase.COL_2 + " LIKE '" + test + "%'", selectionArgs, null, null, sortOrder, null);
 
-        return cursor;
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://autoc.finance.yahoo.com/autoc?query=" + test + "&region=NA&lang=en")
+                .build();
+
+
+        try {
+            Response response = client.newCall(request).execute();
+            String jsonString = response.body().string();
+            JSONObject object= new JSONObject(jsonString);
+            JSONObject object2 = object.getJSONObject("ResultSet");
+            JSONArray locArr = object2.getJSONArray("Result");
+
+
+                    if(locArr.length()> 0) {
+
+
+                        for(int i = 0; i < locArr.length(); i++)
+                        {
+                            JSONObject ResultObject = locArr.getJSONObject(i);
+                            String symbol = ResultObject.getString("symbol");
+                            String name = ResultObject.getString("name");
+                            if(symbol.length() < 7)
+                            {
+                                cursor2.addRow(new Object[]{ i, symbol, name, symbol });
+                            }
+                        }
+
+
+                    }
+
+
+
+
+
+
+
+
+            } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return cursor2;
     }
 
 
@@ -144,6 +195,8 @@ public class ContentProviderSuggestions extends ContentProvider {
     public int delete(Uri uri, String s, String[] strings) {
         throw new UnsupportedOperationException();
     }
+
+
 
 
 }

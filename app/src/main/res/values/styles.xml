@@ -24,6 +24,13 @@
         <item name="textAllCaps">true</item>
     </style>
 
+    <style name="SpecialButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">#fff</item>
+    </style>
+
+
+
 
 
 

@@ -12,7 +12,8 @@
         android:id ="@+id/refresh"
         android:orderInCategory="2"
         android:title="Refresh"
-        android:icon ="@drawable/ic_action_turnright"
+        android:icon ="@drawable/ic_action_turn_right"
+        android:iconifiedByDefault="true"
         app:showAsAction="ifRoom"/>
 
     <item
@@ -31,7 +32,7 @@
         android:id="@+id/menu_settings"
         app:showAsAction="never"
         android:orderInCategory="4"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@drawable/ic_action_overflow"
         android:title="About"/>
 
 
@@ -42,6 +43,7 @@
         android:id="@+id/version"
         app:showAsAction="never"
         android:title="Version"
+        android:icon="@drawable/ic_action_overflow"
         android:orderInCategory="3"
         />
 

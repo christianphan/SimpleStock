@@ -62,33 +62,36 @@ public class PageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.info_page, container, false);
 
-        CircularProgressView progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
-        progressView.startAnimation();
 
-        TextView infotitleshown = (TextView) view.findViewById(R.id.titleInfo);
-        TextView datetitleshown = (TextView) view.findViewById(R.id.dateinfo);
-        TextView opentitleshown = (TextView) view.findViewById(R.id.openTitle);
-        TextView valuetitleshown = (TextView) view.findViewById(R.id.currentTitle);
-        TextView hightitleshown = (TextView) view.findViewById(R.id.highTitle);
-        TextView lowtitleshown = (TextView) view.findViewById(R.id.lowTitle) ;
-        TextView perenttitleshown = (TextView) view.findViewById(R.id.percentTitle);
-        TextView totalgaintitleshown = (TextView) view.findViewById(R.id.totalGainTitle);
-        TextView volumetitleshown = (TextView) view.findViewById(R.id.volumeTitle);
-        TextView annualtitleshown = (TextView) view.findViewById(R.id.annualTitle);
-        LineChart chart = (LineChart) view.findViewById(R.id.chart);
+            CircularProgressView progressView = (CircularProgressView) view.findViewById(R.id.progress_view);
+            progressView.startAnimation();
+
+            TextView infotitleshown = (TextView) view.findViewById(R.id.titleInfo);
+            TextView datetitleshown = (TextView) view.findViewById(R.id.dateinfo);
+            TextView opentitleshown = (TextView) view.findViewById(R.id.openTitle);
+            TextView valuetitleshown = (TextView) view.findViewById(R.id.currentTitle);
+            TextView hightitleshown = (TextView) view.findViewById(R.id.highTitle);
+            TextView lowtitleshown = (TextView) view.findViewById(R.id.lowTitle);
+            TextView perenttitleshown = (TextView) view.findViewById(R.id.percentTitle);
+            TextView totalgaintitleshown = (TextView) view.findViewById(R.id.totalGainTitle);
+            TextView volumetitleshown = (TextView) view.findViewById(R.id.volumeTitle);
+            TextView annualtitleshown = (TextView) view.findViewById(R.id.annualTitle);
+            LineChart chart = (LineChart) view.findViewById(R.id.chart);
 
 
-        infotitleshown.setVisibility(view.GONE);
-        valuetitleshown.setVisibility(view.GONE);
-        datetitleshown.setVisibility(view.GONE);
-        opentitleshown.setVisibility(view.GONE);
-        hightitleshown.setVisibility(view.GONE);
-        lowtitleshown.setVisibility(view.GONE);
-        perenttitleshown.setVisibility(view.GONE);
-        totalgaintitleshown.setVisibility(view.GONE);
-        volumetitleshown .setVisibility(view.GONE);
-        annualtitleshown.setVisibility(view.GONE);
-        chart.setVisibility(view.GONE);
+            infotitleshown.setVisibility(view.GONE);
+            valuetitleshown.setVisibility(view.GONE);
+            datetitleshown.setVisibility(view.GONE);
+            opentitleshown.setVisibility(view.GONE);
+            hightitleshown.setVisibility(view.GONE);
+            lowtitleshown.setVisibility(view.GONE);
+            perenttitleshown.setVisibility(view.GONE);
+            totalgaintitleshown.setVisibility(view.GONE);
+            volumetitleshown.setVisibility(view.GONE);
+            annualtitleshown.setVisibility(view.GONE);
+            chart.setVisibility(view.GONE);
+
+
 
         return view;
     }

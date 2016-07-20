@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 public class TabAdapter extends SmartFragmentStatePageAdapter {
 
     private SmartFragmentStatePageAdapter adapterViewPager;
-    final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] { "Info", "News", };
+    final int PAGE_COUNT = 4;
+    private String tabTitles[] = new String[] { "Info", "News", "Annual", "Your Shares" };
     private static Context context;
 
     public TabAdapter(FragmentManager fm, Context context) {
@@ -34,6 +34,10 @@ public class TabAdapter extends SmartFragmentStatePageAdapter {
                 return PageFragment.newInstance(position + 1);
             case 1:
                 return PageFragment2.newInstance(position + 1);
+            case 2:
+                return PageFragment3.newInstance(position + 1);
+            case 3:
+                return PageFragment4.newInstance(position + 1);
             default:
                 return null;
         }
