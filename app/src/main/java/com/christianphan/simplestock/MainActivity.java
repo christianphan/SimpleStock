@@ -3,17 +3,16 @@ package com.christianphan.simplestock;
 
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.SQLException;
 import android.os.AsyncTask;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -28,24 +27,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Calendar;
 import java.util.Map;
 
 
-import au.com.bytecode.opencsv.CSVReader;
 import yahoofinance.YahooFinance;
 
 
@@ -74,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     ListView suggestionslist;
     Context thisContext;
     MenuItem searchItem;
+    SharedPreferences pref;
+    SharedPreferences pref2;
+    SharedPreferences pref3;
+    SharedPreferences pref4;
 
 
 
@@ -151,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 return true;
             case R.id.menu_search:
                 return true;
+            case R.id.menu_options:
+                Intent j = new Intent(MainActivity.this, Settings.class);
+                startActivityForResult(j, 2);
+
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -255,9 +258,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        //sets up preferences
+        pref = this.getSharedPreferences("com.christianphan.simplestock", Context.MODE_PRIVATE);
+        pref2 = this.getSharedPreferences("indexes", Context.MODE_PRIVATE);
+        pref3 = this.getSharedPreferences("AlarmActivated", Context.MODE_PRIVATE);
+        pref4 = this.getSharedPreferences("Low_High", Context.MODE_PRIVATE);
+
         setContentView(R.layout.activity_main);
-
-
         final ListView listview = (ListView) findViewById(R.id.listView);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         mSwipeRefreshLayout. setColorSchemeResources(R.color.colorPrimary);
@@ -269,7 +278,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         getList();
         //loadSearch();
         thisContext =  getApplicationContext();
+
+
+        //sets Default Repeating Value to
+        if(pref3.getInt("Repeating",-1) == -1 )
+        {
+            pref3.edit().putInt("Repeating", 2).commit();
+        }
         refresh();
+
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -303,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String testprice4 = values[3];
                 String testprice5 = arrayList.get(stockposition).value;
                 int intchange = datalist.IsPositive(stockposition);
+                int idcode = arrayList.get(stockposition).primaryid;
 
                 try {
 
@@ -339,6 +357,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 b.putString("Price5", testprice5);
                 b.putString("Amount", testAmountofStock);
                 b.putString("ValueOfShares", testValueofStock);
+                b.putInt("position", stockposition);
+                b.putInt("ID", idcode);
                 i.putExtras(b);
 
 
@@ -693,11 +713,32 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             String indexname = arrayList.get(position).index;
 
             Integer deletedRow = myDB.deleteData(Integer.toString(arrayList.get(position).primaryid));
+            String prefcode = Integer.toString(arrayList.get(position).primaryid);
             arrayList.remove(position);
             adapter.notifyDataSetChanged();
             datalist.removeArrayList(position);
+            int alarmID =  pref.getInt(prefcode, 0);
 
+            if(alarmID != 0)
+            {
+                int notificationlist = pref3.getInt("Count", 0);
+                pref.edit().remove(prefcode).apply();
+                pref2.edit().remove(prefcode).apply();
+                pref3.edit().putInt("Count", notificationlist -1).apply();
+                String test = pref4.getString("HIGH" + prefcode, "0");
+                pref4.edit().remove("LOW" + prefcode).apply();
+                pref4.edit().remove("HIGH" + prefcode).apply();
 
+                if(pref3.getInt("Count", 0) == 0)
+                {
+                    if(pref3.getString("alarm_ON_OR_OFF", "NEUTRAL").contains("TRUE"))
+                    {
+                        pref3.edit().putString("alarm_ON_OR_OFF", "NEUTRAL");
+                        Log.d("ALARM STATUS", pref3.getString("alarm_ON_OR_OFF", ""));
+                        cancelAlarm();
+                    }
+                }
+            }
             Toast toast = Toast.makeText(getApplicationContext(), "(" + indexname + ")" + " Deleted", Toast.LENGTH_LONG);
             toast.show();
         }
@@ -708,6 +749,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         }
     }
+
+    public void cancelAlarm()
+    {
+        Calendar calendar = Calendar.getInstance();
+        Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+        alarm.setAction("NEW_ALERT");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+    }
+
+
 
 
 
@@ -737,5 +791,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
   //      }
 
   //  }
+
+
+
 
 }

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET">
     </uses-permission>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -37,6 +38,10 @@
 
             </activity>
 
+        <activity android:name=".Settings"
+            android:configChanges="orientation|screenSize">
+            </activity>
+
         <service android:name=".RssService" />
 
 
@@ -45,6 +50,16 @@
             android:exported="true"
             android:enabled="true"
             android:name="com.christianphan.simplestock.ContentProviderSuggestions"/>
+
+
+        <service android:name=".BackgroundService" />
+        <receiver android:name="AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 

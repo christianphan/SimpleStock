@@ -202,7 +202,7 @@ public class PageFragment4 extends Fragment {
                         amount = Integer.toString(combinedamount);
                         value = f.format(combineddouble);
 
-                        
+
 
                         amountofsharesshown.setText(amount);
                         valueofsharesshown.setText("$" + value);

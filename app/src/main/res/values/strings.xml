@@ -12,7 +12,9 @@
     <string name="hintstarting">0</string>
     <string name="buttonadd">Add Shares</string>
     <string name="buttonremove">Reset Shares</string>
+    <string name="price_below_title">Price Below</string>
+    <string name="price_above_title">Price Above</string>
+    <string name="notification_staus">Notification Enabled</string>
 
 
-
-    </resources>
+</resources>

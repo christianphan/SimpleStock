@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:gravity="bottom" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="6"
+            android:id="@+id/pricebelowtitle"
+            android:textColor="#303032"
+            android:text="@string/price_below_title"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:digits="1234567890."
+            android:singleLine="true"
+            android:background="@android:color/transparent"
+            android:layout_weight="3"
+            android:id="@+id/editpricebelow"/>
+
+
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_marginLeft="5dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/edittexthint2"
+            android:textColor="#303032"
+            android:text="@string/price_above_title"/>
+
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:inputType="number"
+            android:digits="1234567890."
+            android:singleLine="true"
+            android:id="@+id/editpriceabove" />
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="9"
+        android:layout_marginTop="15dp">
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:id="@+id/addpref"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:text="Add"/>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:id="@+id/remove_notification"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:text="Remove"/>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:id="@+id/cancel_addingpref"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:text="Cancel"/>
+
+
+
+
+
+
+    </LinearLayout>
+</LinearLayout>

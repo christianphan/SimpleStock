@@ -1,19 +1,31 @@
 package com.christianphan.simplestock;
 
 import android.app.ActionBar;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
+import java.util.TimeZone;
 
 import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -53,6 +67,7 @@ public class AdditonalInfo extends AppCompatActivity {
 
     private String values[] = new String[4];
     private String dates[] = new String[4];
+    private int stockposition = 0;
     private String index = "";
     private String value = "";
     private String color = "";
@@ -91,6 +106,12 @@ public class AdditonalInfo extends AppCompatActivity {
 
     private ArrayList<News> arrayList;
 
+    SharedPreferences pref;
+    SharedPreferences pref2;
+    SharedPreferences pref3;
+    SharedPreferences pref4;
+    private int idcode;
+    private boolean value_entered = false;
 
 
 
@@ -100,6 +121,10 @@ public class AdditonalInfo extends AppCompatActivity {
     {
 
         super.onCreate(savedInstanceState);
+        pref = this.getSharedPreferences("com.christianphan.simplestock", Context.MODE_PRIVATE);
+        pref2 = this.getSharedPreferences("indexes", Context.MODE_PRIVATE);
+        pref3 = this.getSharedPreferences("AlarmActivated", Context.MODE_PRIVATE);
+        pref4 = this.getSharedPreferences("Low_High", Context.MODE_PRIVATE);
         setContentView(R.layout.activity_additional);
 
 
@@ -128,6 +153,8 @@ public class AdditonalInfo extends AppCompatActivity {
         time = bundle.getString("Time");
         amountofShares = bundle.getString("Amount");
         valueofShares = bundle.getString("ValueOfShares");
+        stockposition = bundle.getInt("position");
+        idcode = bundle.getInt("ID");
 
 
 
@@ -291,6 +318,252 @@ public class AdditonalInfo extends AppCompatActivity {
                 setResult(RESULT_CANCELED,output);
                 finish();
                 return true;
+            case R.id.setNotification:
+
+
+                //gets pref code
+                final String prefcode = Integer.toString(idcode);
+
+                //gets low and high value. if they aren't there returns 0
+                String low_alarm_watch_value = pref4.getString("LOW" + prefcode, "0");
+                String high_alarm_watch_value = pref4.getString("HIGH" + prefcode, "0");
+
+                Log.d("Pref4 high key", "HIGH" + prefcode);
+
+                //creates dialog
+                final AlertDialog.Builder builder = new AlertDialog.Builder(AdditonalInfo.this);
+                final AlertDialog OptionDialog = builder.create();
+                OptionDialog.setTitle("Reset Shares");
+                LayoutInflater inflater = getLayoutInflater();
+                View dialoglayout = inflater.inflate(R.layout.notification_option, null);
+                OptionDialog.setView(dialoglayout);
+                OptionDialog.show();
+
+
+                //buttons and edittext
+                final Button add = (Button) dialoglayout.findViewById(R.id.addpref);
+                final Button remove = (Button)  dialoglayout.findViewById(R.id.remove_notification);
+                Button cancel = (Button) dialoglayout.findViewById(R.id.cancel_addingpref);
+                final EditText low_alert = (EditText) dialoglayout.findViewById(R.id.editpricebelow);
+                final EditText high_alert = (EditText) dialoglayout.findViewById(R.id.editpriceabove);
+
+
+                //edittext options
+                low_alert.setKeyListener(DigitsKeyListener.getInstance(true,true));
+                high_alert.setKeyListener(DigitsKeyListener.getInstance(true,true));
+                low_alert.setHint(low_alarm_watch_value);
+                high_alert.setHint(high_alarm_watch_value);
+                low_alert.setGravity(Gravity.RIGHT);
+                high_alert.setGravity(Gravity.RIGHT);
+
+                //button Options
+                add.setEnabled(false);
+
+
+
+                if(low_alarm_watch_value == "0" && high_alarm_watch_value == "0")
+                {
+                    remove.setEnabled(false);
+                }
+
+
+
+                add.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+
+                        //checks if first textedit is filled
+                        SharedPreferences.Editor editor4 = pref4.edit();
+                        if(low_alert.getText().toString().matches("") || low_alert.getText().toString().matches("."))
+                        {
+                            editor4.putString("LOW" + prefcode,"0").apply();
+                        }
+                        else
+                        {
+                            editor4.putString("LOW" + prefcode, low_alert.getText().toString()).apply();
+                        }
+
+
+
+                        //checks if second text edit is filled
+                        if(high_alert.getText().toString().matches("") || high_alert.getText().toString().matches("."))
+                        {
+                            editor4.putString("HIGH" + prefcode,"0").apply();
+                        }
+                        else
+                        {
+                            String test = high_alert.getText().toString();
+                            editor4.putString("HIGH" + prefcode, high_alert.getText().toString()).apply();
+                        }
+
+
+
+                        int notificationlist = pref3.getInt("Count", 0);
+                        notificationlist++;
+                        SharedPreferences.Editor editor = pref.edit();
+                        SharedPreferences.Editor editor2 = pref2.edit();
+                        SharedPreferences.Editor editor3 = pref3.edit();
+                        editor.putInt(prefcode,idcode + 1).apply();
+                        editor2.putString(prefcode,index).apply();
+                        editor3.putInt("Count", notificationlist).apply();
+
+                        String alarmboolean = pref3.getString("alarm_ON_OR_OFF","NEUTRAL");
+                        Log.d("alarmboolean" , alarmboolean);
+                        if(alarmboolean.contains("NEUTRAL"))
+                        {
+                            editor3.putString("alarm_ON_OR_OFF","TRUE").apply();
+
+                            //background alarm
+                            Calendar calendar = Calendar.getInstance();
+                            TimeZone tz = TimeZone.getTimeZone("EST");
+                            //   calendar.setTimeZone(tz);
+                            //   calendar.set(Calendar.HOUR_OF_DAY, 16);
+                            //   calendar.set(Calendar.MINUTE, 0);
+                            //    calendar.set(Calendar.SECOND, 0);
+                            Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+                            alarm.setAction("NEW_ALERT");
+
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+                            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),60000, pendingIntent);
+                            Log.d("alarm created" , "TRUE");
+                        }
+                        remove.setEnabled(true);
+                        OptionDialog.cancel();
+
+                    }
+
+                });
+
+                remove.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        SharedPreferences.Editor editor = pref.edit();
+                        SharedPreferences.Editor editor2 = pref2.edit();
+                        SharedPreferences.Editor editor3 = pref3.edit();
+                        SharedPreferences.Editor editor4 = pref4.edit();
+                        editor4.putString("LOW" + prefcode, "0").apply();
+                        editor4.putString("HIGH" + prefcode, "0").apply();
+                        high_alert.setHint("0");
+                        low_alert.setHint("0");
+                        editor.remove(prefcode).apply();
+                        editor2.remove(prefcode).apply();
+                        int notificationlist = pref3.getInt("Count", 0);
+                        notificationlist--;
+                        editor3.putInt("Count", notificationlist);
+
+                        if(notificationlist == 0)
+                        {
+                            if(!pref3.getString("alarm_ON_OR_OFF", "NEUTRAL").contains("FALSE")) {
+
+                                pref3.getString("alarm_ON_OR_OFF", "NEUTRAL");
+                                Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+                                alarm.setAction("NEW_ALERT");
+
+                                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+                                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                                alarmManager.cancel(pendingIntent);
+                            }
+                        }
+
+                    }
+
+
+                });
+
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        OptionDialog.cancel();
+
+                    }
+
+
+                });
+
+
+
+                //edittext options
+                low_alert.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                        if(s.toString().trim().length()==0){
+                            value_entered = false;
+                        } else {
+
+                            if(s.toString().matches(".*[123456789].*"))
+                            {
+                                value_entered = true;
+                                add.setEnabled(true);
+                            }
+                            else
+                            {
+                                value_entered = false;
+                                add.setEnabled(false);
+                            }
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                });
+
+                high_alert.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                        if(s.toString().trim().length()==0){
+                            value_entered = false;
+                        } else {
+
+                            if(s.toString().matches(".*[123456789].*"))
+                            {
+                                value_entered = true;
+                                add.setEnabled(true);
+                            }
+                            else
+                            {
+                                value_entered = false;
+                                add.setEnabled(false);
+                            }
+
+                        }
+
+
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                });
+
+
+
+
+
+
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

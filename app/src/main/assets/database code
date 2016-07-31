@@ -34,3 +34,20 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentBottom="true"
                                 android:layout_marginBottom="20dp" />
+
+
+
+        <!-- [START firebase_service] -->
+        <service
+            android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <!-- [END firebase_service] -->
+        <service
+            android:name=".MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
