@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -145,9 +146,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.menu_settings:
                 aboutdialog();
                 return true;
-            case R.id.version:
-                versionnumber();
-                return true;
             case R.id.menu_search:
                 return true;
             case R.id.menu_options:
@@ -170,45 +168,44 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     public void aboutdialog()
     {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        final AlertDialog OptionDialog = builder.create();
-        OptionDialog.setTitle("About");
-        LayoutInflater inflater = getLayoutInflater();
-        View dialoglayout = inflater.inflate(R.layout.about_info, null);
-        OptionDialog.setView(dialoglayout);
-        OptionDialog.show();
-
-    }
-
-    public void versionnumber()
-    {
-
-        try
-        {
+        try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             String version = pInfo.versionName;
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             final AlertDialog OptionDialog = builder.create();
-            OptionDialog.setTitle("Version:");
+            OptionDialog.setTitle("About" + "  (Version:" + version + ")");
             LayoutInflater inflater = getLayoutInflater();
-            View dialoglayout = inflater.inflate(R.layout.version_info, null);
+            View dialoglayout = inflater.inflate(R.layout.about_info, null);
             OptionDialog.setView(dialoglayout);
-
-            TextView versionshow = (TextView) dialoglayout.findViewById(R.id.textView3) ;
-            versionshow.setText(version);
             OptionDialog.show();
+            Button buttonrate = (Button) dialoglayout.findViewById(R.id.rateappbutton);
+
+            buttonrate.setOnClickListener(new View.OnClickListener() {
 
 
+                @Override
+                public void onClick(View v) {
+
+
+                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+
+                }
+
+            });
         }
-        catch(Exception io)
+        catch (Exception io)
         {
 
         }
 
-
-
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -289,7 +286,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         {
             pref3.edit().putInt("Repeating", 2).commit();
         }
-        refresh();
+
+        try
+        {
+            refresh();
+        }
+        catch (Exception e)
+        {
+
+        }
 
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -577,21 +582,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                 stock.get(indexArray[i]).getQuote().getOpen().toString(), stock.get(indexArray[i]).getQuote().getDayHigh().toString(),
                                 stock.get(indexArray[i]).getQuote().getDayLow().toString(), stock.get(indexArray[i]).getQuote().getVolume().toString(), stock.get(indexArray[i]).getQuote().getYearHigh().toString(),
                                 stock.get(indexArray[i]).getQuote().getLastTradeDateStr());
+                        count++;
 
                     }
 
 
                 } catch (MalformedURLException ex) {
                     datalist.setStringName("BAD_INDEX");
-
-                    try {
-                        for (int j = 0; j < arrayList.size(); j++) {
-                            YahooFinance.get(arrayList.get(j).index);
-                            count++;
-                        }
-                    } catch (Exception e) {
-                        return "error";
-                    }
                     return "error";
                 } catch (IOException ex) {
                     datalist.setStringName("error");

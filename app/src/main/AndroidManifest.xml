@@ -46,6 +46,10 @@
             android:configChanges="orientation|screenSize">
         </activity>
 
+        <activity android:name=".WebView"
+            android:configChanges="orientation|screenSize">
+        </activity>
+
         <service android:name=".RssService" />
 
 

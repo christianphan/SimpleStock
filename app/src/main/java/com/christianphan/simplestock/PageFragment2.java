@@ -82,9 +82,17 @@ public class PageFragment2 extends Fragment {
 
 
                 if(activity.getArrayList().get(position).getLink() != null) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(activity.getArrayList().get(position).getLink()));
-                    startActivity(intent);
+
+
+                    Intent j = new Intent(activity.getApplicationContext(), WebView.class);
+                    Bundle b = new Bundle();
+                    b.putString("URL", activity.getArrayList().get(position).getLink());
+                    j.putExtras(b);
+                    startActivity(j);
+
+         //           Intent intent = new Intent(Intent.ACTION_VIEW,
+          //                  Uri.parse(activity.getArrayList().get(position).getLink()));
+         //           startActivity(intent);
 
                 }
 

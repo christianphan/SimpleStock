@@ -31,7 +31,7 @@
     <item
         android:id="@+id/menu_settings"
         app:showAsAction="never"
-        android:orderInCategory="6"
+        android:orderInCategory="5"
         android:icon="@drawable/ic_action_overflow"
         android:title="About"/>
 
@@ -52,13 +52,6 @@
 
 
 
-    <item
-        android:id="@+id/version"
-        app:showAsAction="never"
-        android:title="Version"
-        android:icon="@drawable/ic_action_overflow"
-        android:orderInCategory="5"
-        />
 
 
     <android.support.v7.widget.Toolbar

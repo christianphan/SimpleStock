@@ -575,6 +575,7 @@ public class AdditonalInfo extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.stock_menu, menu);
 
