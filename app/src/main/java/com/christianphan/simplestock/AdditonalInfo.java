@@ -329,6 +329,8 @@ public class AdditonalInfo extends AppCompatActivity {
                 String high_alarm_watch_value = pref4.getString("HIGH" + prefcode, "0");
 
                 Log.d("Pref4 high key", "HIGH" + prefcode);
+                Log.d("LOw", low_alarm_watch_value);
+                Log.d("HIGH", high_alarm_watch_value);
 
                 //creates dialog
                 final AlertDialog.Builder builder = new AlertDialog.Builder(AdditonalInfo.this);
@@ -408,26 +410,23 @@ public class AdditonalInfo extends AppCompatActivity {
                         editor.putInt(prefcode,idcode + 1).apply();
                         editor2.putString(prefcode,index).apply();
                         editor3.putInt("Count", notificationlist).apply();
+                        Log.d("notification" , "added");
 
                         String alarmboolean = pref3.getString("alarm_ON_OR_OFF","NEUTRAL");
                         Log.d("alarmboolean" , alarmboolean);
                         if(alarmboolean.contains("NEUTRAL"))
                         {
                             editor3.putString("alarm_ON_OR_OFF","TRUE").apply();
+                            int hours = 1 + pref3.getInt("Repeating", 2);
 
                             //background alarm
                             Calendar calendar = Calendar.getInstance();
-                            TimeZone tz = TimeZone.getTimeZone("EST");
-                            //   calendar.setTimeZone(tz);
-                            //   calendar.set(Calendar.HOUR_OF_DAY, 16);
-                            //   calendar.set(Calendar.MINUTE, 0);
-                            //    calendar.set(Calendar.SECOND, 0);
                             Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
                             alarm.setAction("NEW_ALERT");
 
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
                             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),60000, pendingIntent);
+                            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000 * 60 * hours, pendingIntent);
                             Log.d("alarm created" , "TRUE");
                         }
                         remove.setEnabled(true);
@@ -446,27 +445,34 @@ public class AdditonalInfo extends AppCompatActivity {
                         SharedPreferences.Editor editor2 = pref2.edit();
                         SharedPreferences.Editor editor3 = pref3.edit();
                         SharedPreferences.Editor editor4 = pref4.edit();
-                        editor4.putString("LOW" + prefcode, "0").apply();
-                        editor4.putString("HIGH" + prefcode, "0").apply();
+                        editor4.remove("LOW" + prefcode).apply();
+                        editor4.remove("HIGH" + prefcode).apply();
                         high_alert.setHint("0");
                         low_alert.setHint("0");
                         editor.remove(prefcode).apply();
                         editor2.remove(prefcode).apply();
                         int notificationlist = pref3.getInt("Count", 0);
-                        notificationlist--;
-                        editor3.putInt("Count", notificationlist);
+                        Log.d("NotificationList1", Integer.toString(notificationlist));
+                        notificationlist = notificationlist - 1;
+                        editor3.putInt("Count", notificationlist).apply();
+                        remove.setEnabled(false);
+                        Log.d("Notification", "Removed");
+                        Log.d("NotificationList2", Integer.toString(notificationlist));
 
-                        if(notificationlist == 0)
+                        if(pref3.getInt("Count", 0) == 0)
                         {
+
                             if(!pref3.getString("alarm_ON_OR_OFF", "NEUTRAL").contains("FALSE")) {
 
-                                pref3.getString("alarm_ON_OR_OFF", "NEUTRAL");
+                                editor3.putString("alarm_ON_OR_OFF", "NEUTRAL").apply();
+                                Log.d("ALARM STATUS", pref3.getString("alarm_ON_OR_OFF", "NEUTRAL"));
                                 Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
                                 alarm.setAction("NEW_ALERT");
 
                                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
                                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                                 alarmManager.cancel(pendingIntent);
+                                Log.d("ALARM ON/OFF", "OFF");
                             }
                         }
 

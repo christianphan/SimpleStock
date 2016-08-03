@@ -9,6 +9,7 @@ import android.os.*;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -34,22 +35,28 @@ public class AlarmReceiver extends BroadcastReceiver {
                     Log.d("boot", alarm);
                     if(alarm.contains("TRUE")) {
 
+                                int hours = 1 + prefs3.getInt("Repeating", 2);
                                 Calendar calendar = Calendar.getInstance();
                                 Intent alarmintent = new Intent(context, AlarmReceiver.class);
                                 alarmintent.setAction("NEW_ALERT");
 
                                 PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmintent, PendingIntent.FLAG_UPDATE_CURRENT);
                                 AlarmManager alarmManager = (AlarmManager) mcontext.getSystemService(context.ALARM_SERVICE);
-                                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000, pendingIntent);
+                                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60000 * 60 * hours, pendingIntent);
                                 Log.d("alarm", " ADDED");
                     }
 
                     break;
                 case "NEW_ALERT":
 
-                    Log.d("intent started", "TRUE");
-                    Intent background = new Intent(context, BackgroundService.class);
-                    context.startService(background);
+                    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
+                    int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                    Log.d("NEW_ALERT", "ATTEMPTED");
+                    if(hour >= 9 && hour <= 16) {
+                        Intent background = new Intent(context, BackgroundService.class);
+                        context.startService(background);
+
+                    }
 
                     break;
                 default:

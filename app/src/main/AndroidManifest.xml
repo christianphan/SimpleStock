@@ -42,6 +42,10 @@
             android:configChanges="orientation|screenSize">
             </activity>
 
+        <activity android:name=".Portfolio"
+            android:configChanges="orientation|screenSize">
+        </activity>
+
         <service android:name=".RssService" />
 
 
@@ -55,6 +59,7 @@
         <service android:name=".BackgroundService" />
         <receiver android:name="AlarmReceiver"
             android:enabled="true"
+            android:label="BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

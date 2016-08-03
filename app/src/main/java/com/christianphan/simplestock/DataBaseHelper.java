@@ -27,8 +27,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COL_11 = "VOLUME";
     public static final String COL_12 = "ANNUAL";
     public static final String COL_13 = "TIME";
-    public static final String COL_14 = "NUMOFSHARES";
-    public static final String COL_15 = "VALUEOFSHARES";
+    public static final String COL_14 = "NUMOFSHARES";  //res.getString(13)
+    public static final String COL_15 = "VALUEOFSHARES"; //res.getString(14)
 
 
     public DataBaseHelper(Context context) {

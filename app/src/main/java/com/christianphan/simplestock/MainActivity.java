@@ -153,7 +153,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.menu_options:
                 Intent j = new Intent(MainActivity.this, Settings.class);
                 startActivityForResult(j, 2);
-
+                return true;
+            case R.id.portfolio:
+                Intent k = new Intent(MainActivity.this, Portfolio.class);
+                startActivityForResult(k, 3);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -545,6 +549,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     public class YahooAPIRefesh extends AsyncTask<String, String, String> {
 
+        private int count = 0;
+
         @Override
         protected String doInBackground(String... args) {
 
@@ -576,7 +582,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
 
                 } catch (MalformedURLException ex) {
-                    datalist.setStringName("error");
+                    datalist.setStringName("BAD_INDEX");
+
+                    try {
+                        for (int j = 0; j < arrayList.size(); j++) {
+                            YahooFinance.get(arrayList.get(j).index);
+                            count++;
+                        }
+                    } catch (Exception e) {
+                        return "error";
+                    }
                     return "error";
                 } catch (IOException ex) {
                     datalist.setStringName("error");
@@ -603,7 +618,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         protected void onPostExecute(String avoid) {
 
             super.onPostExecute(avoid);
-            if (datalist.getStringName() != "error" && datalist.getStringName() != "No list") {
+            if (datalist.getStringName() != "error" && datalist.getStringName() != "No list" && datalist.getStringName() != "BAD_INDEX") {
 
                 for (int i = 0; i < arrayList.size(); i++) {
 
@@ -638,6 +653,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 toast.show();
                 mSwipeRefreshLayout.setRefreshing(false);
 
+            }
+            else if (datalist.getStringName() == "BAD_INDEX" && datalist.getStringName() != "No list")
+            {
+                String indexname = arrayList.get(count).index;
+                Toast toast = Toast.makeText(getApplicationContext(), "Unable to update " + indexname + ". Please remove it.", Toast.LENGTH_SHORT);
+                toast.show();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
             else if(datalist.getStringName() != "No list"){
                 Toast toast = Toast.makeText(getApplicationContext(), "Connection Error", Toast.LENGTH_SHORT);
@@ -733,8 +755,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 {
                     if(pref3.getString("alarm_ON_OR_OFF", "NEUTRAL").contains("TRUE"))
                     {
-                        pref3.edit().putString("alarm_ON_OR_OFF", "NEUTRAL");
-                        Log.d("ALARM STATUS", pref3.getString("alarm_ON_OR_OFF", ""));
+                        pref3.edit().putString("alarm_ON_OR_OFF", "NEUTRAL").apply();
+                        Log.d("ALARM STATUS", pref3.getString("alarm_ON_OR_OFF", "NEUTRAL"));
                         cancelAlarm();
                     }
                 }

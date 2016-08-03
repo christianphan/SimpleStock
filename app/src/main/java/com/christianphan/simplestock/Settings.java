@@ -85,25 +85,24 @@ public class Settings  extends AppCompatActivity{
                     if(pref3.getInt("Count", 0) > 0)
                     {
                         editor3.putString("alarm_ON_OR_OFF","TRUE").apply();
+                        int hours = 1 + pref3.getInt("Repeating", 2);
+
+
                         //background alarm
                         Calendar calendar = Calendar.getInstance();
-                        TimeZone tz = TimeZone.getTimeZone("EST");
-                        //   calendar.setTimeZone(tz);
-                        //   calendar.set(Calendar.HOUR_OF_DAY, 16);
-                        //   calendar.set(Calendar.MINUTE, 0);
-                        //    calendar.set(Calendar.SECOND, 0);
                         Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
                         alarm.setAction("NEW_ALERT");
 
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
                         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),60000, pendingIntent);
-                        Log.d("alarm created" , "TRUE");
+                        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),60000 * 60 * hours, pendingIntent);
+                        Log.d("alarm created" , pref3.getString("alarm_ON_OR_OFF","NEUTRAL"));
 
                     }
                     else
                     {
                         editor3.putString("alarm_ON_OR_OFF","NEUTRAL").apply();
+                        Log.d("alarm created" , pref3.getString("alarm_ON_OR_OFF","NEUTRAL"));
                     }
 
                     Toast toast = Toast.makeText(getApplicationContext(), "Notifications Turned On", Toast.LENGTH_SHORT);
@@ -115,6 +114,7 @@ public class Settings  extends AppCompatActivity{
                 if(!isChecked)
                 {
                     editor3.putString("alarm_ON_OR_OFF","FALSE").apply();
+                    Log.d("alarm status", pref3.getString("alarm_ON_OR_OFF","NEUTRAL"));
                     Calendar calendar = Calendar.getInstance();
                     Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
                     alarm.setAction("NEW_ALERT");
@@ -166,12 +166,16 @@ public class Settings  extends AppCompatActivity{
                                     defaulttime.setText(messagetext2);
                                     pref3.edit().putInt("Repeating", repeatingtime).apply();
                                 }
+
+                                if(!pref3.getString("alarm_ON_OR_OFF","NEUTRAL").contains("FALSE") && !pref3.getString("alarm_ON_OR_OFF","NEUTRAL").contains("NEUTRAL") )
+                                {
+                                    createAlarm();
+                                }
                             }
                         });
                 builder.setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(Settings.this, "Fail", Toast.LENGTH_SHORT).show();
                             }
                         });
                 AlertDialog alert = builder.create();
@@ -202,6 +206,20 @@ public class Settings  extends AppCompatActivity{
             default:
                 return true;
         }
+    }
+
+    public void createAlarm()
+    {
+        int hours = 1 + pref3.getInt("Repeating", 2);
+        //background alarm
+        Calendar calendar = Calendar.getInstance();
+        Intent alarm = new Intent(getApplicationContext(), AlarmReceiver.class);
+        alarm.setAction("NEW_ALERT");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),60000 * 60 * hours, pendingIntent);
+        Log.d("alarm created" , pref3.getString("alarm_ON_OR_OFF","NEUTRAL"));
     }
 
 
